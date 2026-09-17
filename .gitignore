@@ -1,0 +1,15 @@
+# Binaries
+/bin/
+/micro
+
+# Test and coverage
+*.test
+*.out
+
+# Env
+.env
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store

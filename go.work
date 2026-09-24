@@ -1,0 +1,9 @@
+go 1.27.1
+
+use (
+	./common
+	./infrastructure
+	./auth
+	./blog
+	./notification
+)

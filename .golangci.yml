@@ -1,0 +1,102 @@
+version: "2"
+
+linters:
+  default: none
+
+  enable:
+    # default
+    - ineffassign
+    - staticcheck
+    - unused
+    - errcheck
+    - govet
+
+    # quality
+    - gocyclo
+    - gocognit
+
+    # autofix
+    - misspell
+
+    # custom
+    - asasalint
+    - asciicheck
+    - bidichk
+    - bodyclose
+    - contextcheck
+    - depguard
+    - durationcheck
+    - errname
+    - forcetypeassert
+    - gocheckcompilerdirectives
+    - gochecknoinits
+    - goconst
+    - goprintffuncname
+    - loggercheck
+    - makezero
+    - nilerr
+    - noctx
+    - nonamedreturns
+    - predeclared
+    - reassign
+    - rowserrcheck
+    - sqlclosecheck
+    - testableexamples
+    - unconvert
+    - usestdlibvars
+    - wastedassign
+    - revive
+    - containedctx
+    - dogsled
+    - grouper
+    - gomoddirectives
+    - thelper
+
+  exclusions:
+    rules:
+      - path: (.+)_test.go
+        linters:
+          - goconst
+          - gosec
+          - gocritic
+          - containedctx
+          - dogsled
+          - grouper
+          - gocyclo
+          - thelper
+
+  settings:
+    depguard:
+      rules:
+        denylist:
+          deny:
+            - pkg: "github.com/pkg/errors"
+              desc: Should be replaced by standard lib errors package
+            - pkg: "github.com/jinzhu/copier"
+              desc: not allowed
+    errcheck:
+      check-type-assertions: true
+      check-blank: false
+    gocyclo:
+      min-complexity: 10
+    gocognit:
+      min-complexity: 15
+    revive:
+      rules:
+        - name: filename-format
+          severity: error
+          disabled: false
+          arguments:
+            - "^[a-z][a-z0-9_]*(_test)?\\.go$"
+
+run:
+  timeout: 10m
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+
+formatters:
+  settings:
+    gofmt:
+      simplify: true

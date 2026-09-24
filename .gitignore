@@ -1,6 +1,5 @@
 # Binaries
 /bin/
-/micro
 
 # Test and coverage
 *.test
@@ -8,6 +7,9 @@
 
 # Env
 .env
+
+# Локальные заметки
+/docs/
 
 # Editors / OS
 .idea/

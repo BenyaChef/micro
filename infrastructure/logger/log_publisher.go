@@ -4,7 +4,7 @@ import (
 	"context"
 	"log/slog"
 
-	apperrors "micro/infrastructure/errors"
+	apperrors "github.com/BenyaChef/micro/infrastructure/errors"
 )
 
 type LogPublisher struct {

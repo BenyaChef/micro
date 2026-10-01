@@ -1,6 +1,6 @@
 package envregistry
 
-import envregistrymodel "micro/infrastructure/envregistry/model"
+import envregistrymodel "github.com/BenyaChef/micro/infrastructure/envregistry/model"
 
 type Builder struct {
 	source envregistrymodel.Source

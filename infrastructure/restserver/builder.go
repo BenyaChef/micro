@@ -8,12 +8,12 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
-	loggerinterface "micro/infrastructure/logger/interface"
-	restserverhandler "micro/infrastructure/restserver/handler"
-	restserverinterface "micro/infrastructure/restserver/interface"
-	restservermiddleware "micro/infrastructure/restserver/middleware"
-	restservermodel "micro/infrastructure/restserver/model"
-	restserverservice "micro/infrastructure/restserver/service"
+	loggerinterface "github.com/BenyaChef/micro/infrastructure/logger/interface"
+	restserverhandler "github.com/BenyaChef/micro/infrastructure/restserver/handler"
+	restserverinterface "github.com/BenyaChef/micro/infrastructure/restserver/interface"
+	restservermiddleware "github.com/BenyaChef/micro/infrastructure/restserver/middleware"
+	restservermodel "github.com/BenyaChef/micro/infrastructure/restserver/model"
+	restserverservice "github.com/BenyaChef/micro/infrastructure/restserver/service"
 )
 
 type Builder struct {

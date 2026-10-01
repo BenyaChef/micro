@@ -6,8 +6,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
-	loggerinterface "micro/infrastructure/logger/interface"
-	restservermodel "micro/infrastructure/restserver/model"
+	loggerinterface "github.com/BenyaChef/micro/infrastructure/logger/interface"
+	restservermodel "github.com/BenyaChef/micro/infrastructure/restserver/model"
 )
 
 func RegisterHealth(router chi.Router, serviceName string, logPublisher loggerinterface.LogPublisher) {

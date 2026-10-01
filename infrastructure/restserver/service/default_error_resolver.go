@@ -3,8 +3,8 @@ package restserverservice
 import (
 	"net/http"
 
-	apperrors "micro/infrastructure/errors"
-	restservermodel "micro/infrastructure/restserver/model"
+	apperrors "github.com/BenyaChef/micro/infrastructure/errors"
+	restservermodel "github.com/BenyaChef/micro/infrastructure/restserver/model"
 )
 
 type DefaultErrorResolver struct{}

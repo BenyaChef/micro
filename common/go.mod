@@ -1,10 +1,10 @@
-module micro/common
+module github.com/BenyaChef/micro/common
 
 go 1.27.1
 
 require (
 	github.com/google/uuid v1.6.0
-	micro/infrastructure v0.0.0
+	github.com/stretchr/testify v1.12.1
 )
 
-replace micro/infrastructure => ../infrastructure
+require go.yaml.in/yaml/v3 v3.0.5 // indirect

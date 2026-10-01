@@ -8,8 +8,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
-	loggerinterface "micro/infrastructure/logger/interface"
-	restserverservice "micro/infrastructure/restserver/service"
+	loggerinterface "github.com/BenyaChef/micro/infrastructure/logger/interface"
+	restserverservice "github.com/BenyaChef/micro/infrastructure/restserver/service"
 )
 
 type Server struct {

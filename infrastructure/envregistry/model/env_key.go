@@ -17,3 +17,12 @@ const (
 	KeyPostgresMinConns       EnvKey = "POSTGRES_MIN_CONNS"
 	KeyPostgresConnectTimeout EnvKey = "POSTGRES_CONNECT_TIMEOUT"
 )
+
+const (
+	KeyJWTSecret EnvKey = "JWT_SECRET"
+	KeyJWTTTL    EnvKey = "JWT_TTL"
+)
+
+const (
+	KeyPasswordHashCost EnvKey = "PASSWORD_HASH_COST"
+)

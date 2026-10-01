@@ -6,8 +6,8 @@ import (
 	"os"
 	"testing"
 
-	apperrors "micro/infrastructure/errors"
-	"micro/infrastructure/postgres"
+	apperrors "github.com/BenyaChef/micro/infrastructure/errors"
+	"github.com/BenyaChef/micro/infrastructure/postgres"
 )
 
 const envTestDSN = "POSTGRES_TEST_DSN"

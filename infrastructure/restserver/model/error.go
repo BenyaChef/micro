@@ -3,7 +3,7 @@ package restservermodel
 import (
 	"fmt"
 
-	"micro/infrastructure/errors"
+	"github.com/BenyaChef/micro/infrastructure/errors"
 )
 
 const (

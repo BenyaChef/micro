@@ -3,7 +3,7 @@ package postgres
 import (
 	"fmt"
 
-	"micro/infrastructure/errors"
+	"github.com/BenyaChef/micro/infrastructure/errors"
 )
 
 var ErrDSNIsRequired = errors.NewError("SYS", "Postgres: DSN is required")

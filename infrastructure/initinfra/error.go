@@ -1,6 +1,6 @@
 package initinfra
 
-import "micro/infrastructure/errors"
+import "github.com/BenyaChef/micro/infrastructure/errors"
 
 var ErrServiceNameIsRequired = errors.NewError("SYS", "InitInfra: ServiceName is required")
 

@@ -1,6 +1,6 @@
 package idprimitive
 
-import "micro/infrastructure/errors"
+import "github.com/BenyaChef/micro/infrastructure/errors"
 
 var (
 	ErrEntityIDIsEmpty       = errors.NewErrorWithLevel("fed17d16-001", "Entity id is empty", errors.LevelInfo)

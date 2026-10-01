@@ -24,9 +24,10 @@ lint:
 test:
 	go test $(PKGS) -race
 test-integration:
-	POSTGRES_TEST_DSN="$(POSTGRES_DSN)" go test ./infrastructure/postgres/... -race -count=1
+	POSTGRES_TEST_DSN="$(POSTGRES_DSN)" go test $(PKGS) -race -count=1
 tidy:
-	@for m in $(MODULES); do (cd $$m && go mod tidy); done
+	@for m in $(MODULES); do (cd $$m && go mod tidy -e); done
+	go work sync
 
 clean:
 	rm -rf bin

@@ -3,8 +3,8 @@ package restservermiddleware
 import (
 	"net/http"
 
-	loggerinterface "micro/infrastructure/logger/interface"
-	restservermodel "micro/infrastructure/restserver/model"
+	loggerinterface "github.com/BenyaChef/micro/infrastructure/logger/interface"
+	restservermodel "github.com/BenyaChef/micro/infrastructure/restserver/model"
 )
 
 func Recover(logPublisher loggerinterface.LogPublisher) func(http.Handler) http.Handler {

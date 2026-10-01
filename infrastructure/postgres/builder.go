@@ -7,7 +7,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	postgresmodel "micro/infrastructure/postgres/model"
+	postgresmodel "github.com/BenyaChef/micro/infrastructure/postgres/model"
 )
 
 type Builder struct {

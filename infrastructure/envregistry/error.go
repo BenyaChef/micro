@@ -3,8 +3,8 @@ package envregistry
 import (
 	"fmt"
 
-	envregistrymodel "micro/infrastructure/envregistry/model"
-	"micro/infrastructure/errors"
+	envregistrymodel "github.com/BenyaChef/micro/infrastructure/envregistry/model"
+	"github.com/BenyaChef/micro/infrastructure/errors"
 )
 
 const (

@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"time"
 
-	loggerinterface "micro/infrastructure/logger/interface"
-	restservermodel "micro/infrastructure/restserver/model"
+	loggerinterface "github.com/BenyaChef/micro/infrastructure/logger/interface"
+	restservermodel "github.com/BenyaChef/micro/infrastructure/restserver/model"
 )
 
 func LogRequest(logPublisher loggerinterface.LogPublisher) func(http.Handler) http.Handler {

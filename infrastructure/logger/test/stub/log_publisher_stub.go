@@ -3,7 +3,7 @@ package loggerteststub
 import (
 	"context"
 
-	loggerinterface "micro/infrastructure/logger/interface"
+	loggerinterface "github.com/BenyaChef/micro/infrastructure/logger/interface"
 )
 
 var _ loggerinterface.LogPublisher = (*LogPublisherStub)(nil)

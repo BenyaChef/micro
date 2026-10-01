@@ -7,7 +7,7 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	postgresinterface "micro/infrastructure/postgres/interface"
+	postgresinterface "github.com/BenyaChef/micro/infrastructure/postgres/interface"
 )
 
 var _ postgresinterface.Database = (*Client)(nil)

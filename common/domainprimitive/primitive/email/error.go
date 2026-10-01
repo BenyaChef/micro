@@ -1,6 +1,6 @@
 package emailprimitive
 
-import "micro/infrastructure/errors"
+import "github.com/BenyaChef/micro/infrastructure/errors"
 
 var (
 	ErrEmailIsEmpty       = errors.NewErrorWithLevel("545af577-001", "Email is empty", errors.LevelInfo)

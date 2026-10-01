@@ -3,7 +3,7 @@ package envregistryinterface
 import (
 	"time"
 
-	envregistrymodel "micro/infrastructure/envregistry/model"
+	envregistrymodel "github.com/BenyaChef/micro/infrastructure/envregistry/model"
 )
 
 type EnvRegistry interface {

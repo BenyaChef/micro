@@ -5,10 +5,10 @@ import (
 	"io"
 	"net/http"
 
-	loggerinterface "micro/infrastructure/logger/interface"
-	restserverinterface "micro/infrastructure/restserver/interface"
-	restservermodel "micro/infrastructure/restserver/model"
-	restserverservice "micro/infrastructure/restserver/service"
+	loggerinterface "github.com/BenyaChef/micro/infrastructure/logger/interface"
+	restserverinterface "github.com/BenyaChef/micro/infrastructure/restserver/interface"
+	restservermodel "github.com/BenyaChef/micro/infrastructure/restserver/model"
+	restserverservice "github.com/BenyaChef/micro/infrastructure/restserver/service"
 )
 
 type BaseController struct {

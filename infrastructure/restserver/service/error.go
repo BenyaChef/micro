@@ -1,6 +1,6 @@
 package restserverservice
 
-import "micro/infrastructure/errors"
+import "github.com/BenyaChef/micro/infrastructure/errors"
 
 var (
 	ErrLogPublisherIsRequired         = errors.NewError("SYS", "ResponseService: LogPublisher is required")

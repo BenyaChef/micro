@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"os"
 
-	loggermodel "micro/infrastructure/logger/model"
+	loggermodel "github.com/BenyaChef/micro/infrastructure/logger/model"
 )
 
 type Builder struct {

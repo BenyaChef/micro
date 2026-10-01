@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	envregistrymodel "micro/infrastructure/envregistry/model"
-	"micro/infrastructure/initinfra"
-	"micro/infrastructure/restserver"
+	envregistrymodel "github.com/BenyaChef/micro/infrastructure/envregistry/model"
+	"github.com/BenyaChef/micro/infrastructure/initinfra"
+	"github.com/BenyaChef/micro/infrastructure/restserver"
 )
 
 const (

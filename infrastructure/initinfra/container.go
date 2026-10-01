@@ -1,11 +1,11 @@
 package initinfra
 
 import (
-	"micro/infrastructure/envregistry"
-	envregistryinterface "micro/infrastructure/envregistry/interface"
-	envregistrymodel "micro/infrastructure/envregistry/model"
-	"micro/infrastructure/logger"
-	loggerinterface "micro/infrastructure/logger/interface"
+	"github.com/BenyaChef/micro/infrastructure/envregistry"
+	envregistryinterface "github.com/BenyaChef/micro/infrastructure/envregistry/interface"
+	envregistrymodel "github.com/BenyaChef/micro/infrastructure/envregistry/model"
+	"github.com/BenyaChef/micro/infrastructure/logger"
+	loggerinterface "github.com/BenyaChef/micro/infrastructure/logger/interface"
 )
 
 type Container struct {

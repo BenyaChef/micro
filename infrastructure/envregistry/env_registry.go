@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"time"
 
-	envregistryinterface "micro/infrastructure/envregistry/interface"
-	envregistrymodel "micro/infrastructure/envregistry/model"
+	envregistryinterface "github.com/BenyaChef/micro/infrastructure/envregistry/interface"
+	envregistrymodel "github.com/BenyaChef/micro/infrastructure/envregistry/model"
 )
 
 var _ envregistryinterface.EnvRegistry = (*Registry)(nil)

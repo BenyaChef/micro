@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	loggerinterface "micro/infrastructure/logger/interface"
-	restservermodel "micro/infrastructure/restserver/model"
+	loggerinterface "github.com/BenyaChef/micro/infrastructure/logger/interface"
+	restservermodel "github.com/BenyaChef/micro/infrastructure/restserver/model"
 )
 
 const (

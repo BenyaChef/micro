@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 
-	loggerinterface "micro/infrastructure/logger/interface"
-	restserverinterface "micro/infrastructure/restserver/interface"
-	restservermodel "micro/infrastructure/restserver/model"
+	loggerinterface "github.com/BenyaChef/micro/infrastructure/logger/interface"
+	restserverinterface "github.com/BenyaChef/micro/infrastructure/restserver/interface"
+	restservermodel "github.com/BenyaChef/micro/infrastructure/restserver/model"
 )
 
 type ErrorResponseService struct {

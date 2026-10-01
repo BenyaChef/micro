@@ -9,12 +9,22 @@ import (
 	timeprimitive "github.com/BenyaChef/micro/common/domainprimitive/primitive/time"
 )
 
+const Columns = "id, email, password_hash, created_at, updated_at"
+
 type User struct {
 	ID           string
 	Email        string
 	PasswordHash string
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
+}
+
+func (m *User) ScanTargets() []any {
+	return []any{&m.ID, &m.Email, &m.PasswordHash, &m.CreatedAt, &m.UpdatedAt}
+}
+
+func (m *User) InsertValues() []any {
+	return []any{m.ID, m.Email, m.PasswordHash, m.CreatedAt, m.UpdatedAt}
 }
 
 func ToModel(user *userentity.User) *User {

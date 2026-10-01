@@ -19,10 +19,8 @@ const (
 	ErrCodeEmailConflict = errors.ErrorCode("fca1b026-030")
 )
 
-var (
-	ErrUserIsRequired   = errors.NewErrorWithLevel("fca1b026-001", "UserRepository: user is required", errors.LevelInfo)
-	ErrUserIDIsRequired = errors.NewErrorWithLevel("fca1b026-002", "UserRepository: userID is required", errors.LevelInfo)
-	ErrEmailIsRequired  = errors.NewErrorWithLevel("fca1b026-003", "UserRepository: email is required", errors.LevelInfo)
+var ErrUserIsRequired = errors.NewErrorWithLevel(
+	"fca1b026-001", "UserRepository: user is required", errors.LevelInfo,
 )
 
 func ErrInsertFailed(userID string, cause error) error {

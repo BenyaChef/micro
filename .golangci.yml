@@ -32,6 +32,7 @@ linters:
     - gochecknoinits
     - goconst
     - goprintffuncname
+    - lll
     - loggercheck
     - makezero
     - nilerr
@@ -57,6 +58,7 @@ linters:
       - path: (.+)_test.go
         linters:
           - goconst
+          - lll
           - gosec
           - gocritic
           - containedctx
@@ -81,6 +83,8 @@ linters:
       min-complexity: 10
     gocognit:
       min-complexity: 15
+    lll:
+      line-length: 140
     revive:
       rules:
         - name: filename-format

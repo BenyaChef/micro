@@ -19,10 +19,7 @@ type ResponseService struct {
 	logPublisher         loggerinterface.LogPublisher
 }
 
-func NewResponseService(
-	errorResponseService *ErrorResponseService,
-	logPublisher loggerinterface.LogPublisher,
-) (*ResponseService, error) {
+func NewResponseService(errorResponseService *ErrorResponseService, logPublisher loggerinterface.LogPublisher) (*ResponseService, error) {
 	if errorResponseService == nil {
 		return nil, ErrErrorResponseServiceIsRequired
 	}
@@ -34,12 +31,7 @@ func NewResponseService(
 	return &ResponseService{errorResponseService: errorResponseService, logPublisher: logPublisher}, nil
 }
 
-func (s *ResponseService) JSONResponse(
-	writer http.ResponseWriter,
-	request *http.Request,
-	result any,
-	responseCode int,
-) {
+func (s *ResponseService) JSONResponse(writer http.ResponseWriter, request *http.Request, result any, responseCode int) {
 	body, err := json.Marshal(result)
 	if err != nil {
 		s.logPublisher.LogError(request.Context(), err)
@@ -51,12 +43,7 @@ func (s *ResponseService) JSONResponse(
 	s.Response(writer, request, body, responseCode)
 }
 
-func (s *ResponseService) Response(
-	writer http.ResponseWriter,
-	request *http.Request,
-	body []byte,
-	responseCode int,
-) {
+func (s *ResponseService) Response(writer http.ResponseWriter, request *http.Request, body []byte, responseCode int) {
 	writer.Header().Set(headerContentType, contentTypeJSON)
 	writer.Header().Set(headerXContentTypeOptions, "nosniff")
 	writer.WriteHeader(responseCode)

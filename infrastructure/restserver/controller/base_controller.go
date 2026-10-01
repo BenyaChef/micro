@@ -37,10 +37,7 @@ func NewBaseController(
 	return &BaseController{responseService: responseService, logPublisher: logPublisher}, nil
 }
 
-func (c *BaseController) FillAndValidateReqModel(
-	request *http.Request,
-	requestModel restserverinterface.ValidateRequestModel,
-) error {
+func (c *BaseController) FillAndValidateReqModel(request *http.Request, requestModel restserverinterface.ValidateRequestModel) error {
 	if err := c.FillReqModel(request, requestModel); err != nil {
 		return err
 	}
@@ -48,10 +45,7 @@ func (c *BaseController) FillAndValidateReqModel(
 	return requestModel.ValidateRequest()
 }
 
-func (c *BaseController) FillReqModel(
-	request *http.Request,
-	requestModel restserverinterface.RequestModel,
-) error {
+func (c *BaseController) FillReqModel(request *http.Request, requestModel restserverinterface.RequestModel) error {
 	body, err := c.GetReqBody(request)
 	if err != nil {
 		return err
@@ -77,12 +71,7 @@ func (c *BaseController) GetReqBody(request *http.Request) ([]byte, error) {
 	return body, nil
 }
 
-func (c *BaseController) JSONResponse(
-	writer http.ResponseWriter,
-	request *http.Request,
-	result any,
-	responseCode int,
-) {
+func (c *BaseController) JSONResponse(writer http.ResponseWriter, request *http.Request, result any, responseCode int) {
 	c.responseService.JSONResponse(writer, request, result, responseCode)
 }
 

@@ -9,10 +9,12 @@ import (
 
 const (
 	defaultRESTPort = "8081"
+	defaultGRPCPort = "9091"
 )
 
 type environments struct {
 	restPort         string
+	grpcPort         string
 	postgresDSN      string
 	postgresMaxConns int
 	postgresMinConns int
@@ -26,6 +28,7 @@ func (c *DependencyContainer) initEnvironments() error {
 
 	c.environments = &environments{
 		restPort:         env.StringDefault(envregistrymodel.KeyRestPort, defaultRESTPort),
+		grpcPort:         env.StringDefault(envregistrymodel.KeyGRPCPort, defaultGRPCPort),
 		postgresDSN:      env.String(envregistrymodel.KeyPostgresDSN),
 		postgresMaxConns: env.Int(envregistrymodel.KeyPostgresMaxConns, 0),
 		postgresMinConns: env.Int(envregistrymodel.KeyPostgresMinConns, 0),

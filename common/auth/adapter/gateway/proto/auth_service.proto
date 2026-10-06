@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package micro.auth.schema;
+
+option go_package = "github.com/BenyaChef/micro/common/auth/adapter/gateway/proto";
+
+import "error.proto";
+
+service AuthService {
+  rpc ValidateToken(ValidateTokenRequest) returns (ValidateTokenResponse);
+}
+
+message ValidateTokenRequest {
+  string access_token = 1;
+}
+
+message ValidateTokenResponse {
+  oneof result {
+    ValidatedToken token = 1;
+    micro.base.schema.Error error = 2;
+  }
+}
+
+message ValidatedToken {
+  string user_id = 1;
+}

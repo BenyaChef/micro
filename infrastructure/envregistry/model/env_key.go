@@ -9,6 +9,7 @@ func (k EnvKey) String() string {
 const (
 	KeyLogLevel EnvKey = "LOG_LEVEL"
 	KeyRestPort EnvKey = "REST_PORT"
+	KeyGRPCPort EnvKey = "GRPC_PORT"
 )
 
 const (

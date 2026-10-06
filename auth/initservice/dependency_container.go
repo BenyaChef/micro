@@ -3,10 +3,13 @@ package initservice
 import (
 	"context"
 
+	authgrpccontroller "github.com/BenyaChef/micro/auth/adapter/controller/grpc/auth"
 	authrestcontroller "github.com/BenyaChef/micro/auth/adapter/controller/rest/auth"
 	repositoryinterface "github.com/BenyaChef/micro/auth/boundary/repository"
 	serviceinterface "github.com/BenyaChef/micro/auth/boundary/service"
 	usecaseinterface "github.com/BenyaChef/micro/auth/boundary/usecase"
+	"github.com/BenyaChef/micro/infrastructure/grpcserver"
+	grpcserverinterface "github.com/BenyaChef/micro/infrastructure/grpcserver/interface"
 	"github.com/BenyaChef/micro/infrastructure/initinfra"
 	"github.com/BenyaChef/micro/infrastructure/postgres"
 	"github.com/BenyaChef/micro/infrastructure/restserver"
@@ -21,6 +24,7 @@ type DependencyContainer struct {
 
 	postgresClient *postgres.Client
 	restServer     *restserver.Server
+	grpcServer     *grpcserver.Server
 
 	tokenService   serviceinterface.TokenService
 	passwordHasher serviceinterface.PasswordHasher
@@ -29,6 +33,8 @@ type DependencyContainer struct {
 	tokenUseCase   usecaseinterface.TokenUseCase
 	userUseCase    usecaseinterface.UserUseCase
 	authController *authrestcontroller.AuthController
+
+	authGRPCController *authgrpccontroller.AuthController
 }
 
 func NewDependencyContainer(ctx context.Context, infra *initinfra.Container, serviceName string) (*DependencyContainer, error) {
@@ -47,6 +53,9 @@ func NewDependencyContainer(ctx context.Context, infra *initinfra.Container, ser
 		container.initRESTServer,
 		container.initRESTControllers,
 		container.initRESTRouting,
+		container.initGRPCServer,
+		container.initGRPCControllers,
+		container.initGRPCRouting,
 	}
 
 	for _, initStep := range initChain {
@@ -62,6 +71,10 @@ func NewDependencyContainer(ctx context.Context, infra *initinfra.Container, ser
 
 func (c *DependencyContainer) RESTServer() restserverinterface.RESTServer {
 	return c.restServer
+}
+
+func (c *DependencyContainer) GRPCServer() grpcserverinterface.GRPCServer {
+	return c.grpcServer
 }
 
 func (c *DependencyContainer) Close() {

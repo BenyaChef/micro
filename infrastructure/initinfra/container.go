@@ -8,6 +8,8 @@ import (
 	loggerinterface "github.com/BenyaChef/micro/infrastructure/logger/interface"
 )
 
+const defaultLogLevel = "info"
+
 type Container struct {
 	logPublisher loggerinterface.LogPublisher
 	env          envregistryinterface.EnvRegistry

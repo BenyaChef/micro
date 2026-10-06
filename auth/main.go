@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	"golang.org/x/sync/errgroup"
+
 	"github.com/BenyaChef/micro/auth/initservice"
 	"github.com/BenyaChef/micro/infrastructure/initinfra"
 )
@@ -33,5 +35,15 @@ func run() error {
 
 	defer container.Close()
 
-	return container.RESTServer().Run(ctx)
+	group, groupCtx := errgroup.WithContext(ctx)
+
+	group.Go(func() error {
+		return container.RESTServer().Run(groupCtx)
+	})
+
+	group.Go(func() error {
+		return container.GRPCServer().Run(groupCtx)
+	})
+
+	return group.Wait()
 }

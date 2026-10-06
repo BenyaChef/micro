@@ -8,15 +8,15 @@ import (
 	loggerinterface "github.com/BenyaChef/micro/infrastructure/logger/interface"
 )
 
-var (
-	ErrExecutorIsRequired     = errors.NewError("SYS", "UserRepository: Executor is required")
-	ErrLogPublisherIsRequired = errors.NewError("SYS", "UserRepository: LogPublisher is required")
-)
-
 const (
 	ErrCodeInsertFailed  = errors.ErrorCode("fca1b026-010")
 	ErrCodeSelectFailed  = errors.ErrorCode("fca1b026-011")
 	ErrCodeEmailConflict = errors.ErrorCode("fca1b026-030")
+)
+
+var (
+	ErrExecutorIsRequired     = errors.NewError("SYS", "UserRepository: Executor is required")
+	ErrLogPublisherIsRequired = errors.NewError("SYS", "UserRepository: LogPublisher is required")
 )
 
 var ErrUserIsRequired = errors.NewErrorWithLevel(

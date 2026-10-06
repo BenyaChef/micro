@@ -8,7 +8,7 @@ GOOSE_VERSION := v3.28.0
 GOOSE := GOWORK=off go run github.com/pressly/goose/v3/cmd/goose@$(GOOSE_VERSION) \
 	-dir migrations postgres "$(POSTGRES_DSN)"
 
-.PHONY: build vet lint test test-integration tidy clean \
+.PHONY: build vet lint test test-integration tidy clean proto \
 	run-auth run-blog run-notification \
 	up down down-v logs ps psql \
 	migrate migrate-down migrate-status migrate-create
@@ -25,12 +25,27 @@ test:
 	go test $(PKGS) -race
 test-integration:
 	POSTGRES_TEST_DSN="$(POSTGRES_DSN)" go test $(PKGS) -race -count=1
+SIBLINGS := $(addprefix -droprequire=github.com/BenyaChef/micro/,$(MODULES))
+
 tidy:
 	@for m in $(MODULES); do (cd $$m && go mod tidy -e); done
+	@for m in $(MODULES); do go mod edit $(SIBLINGS) $$m/go.mod; done
 	go work sync
 
 clean:
 	rm -rf bin
+
+PROTO_BASE  := infrastructure/grpcserver/grpcmodel
+PROTO_AUTH  := common/auth/adapter/gateway/proto
+
+proto:
+	protoc -I $(PROTO_BASE) \
+		--go_out=paths=source_relative:$(PROTO_BASE) \
+		error.proto
+	protoc -I $(PROTO_AUTH) -I $(PROTO_BASE) \
+		--go_out=paths=source_relative:$(PROTO_AUTH) \
+		--go-grpc_out=paths=source_relative:$(PROTO_AUTH) \
+		auth_service.proto
 
 run-auth:
 	go run ./auth

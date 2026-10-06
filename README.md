@@ -47,6 +47,8 @@ curl localhost:8081/healthz     # {"status":"ok","service":"auth"}
 
 ## Статус
 
-Этап 2 из 10. Готов каркас монорепы и общая инфраструктура: логгер, реестр
-переменных окружения, HTTP-сервер на chi с graceful shutdown и `/healthz`.
-Бизнес-логики пока нет.
+Этап 6 из 10. Готова инфраструктура (логгер, env, Postgres, REST и gRPC
+серверы с graceful shutdown) и сервис `auth` целиком: регистрация, логин,
+`/auth/me` по REST и `ValidateToken` по gRPC для других сервисов.
+
+Дальше: blog (этап 7), затем Kafka и notification.

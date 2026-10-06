@@ -6,13 +6,13 @@ import (
 	"github.com/BenyaChef/micro/infrastructure/errors"
 )
 
-var ErrDSNIsRequired = errors.NewError("SYS", "Postgres: DSN is required")
-
 const (
 	ErrCodeInvalidDSN    = errors.ErrorCode("48db1e31-001")
 	ErrCodeConnectFailed = errors.ErrorCode("48db1e31-040")
 	ErrCodePingFailed    = errors.ErrorCode("48db1e31-041")
 )
+
+var ErrDSNIsRequired = errors.NewError("SYS", "Postgres: DSN is required")
 
 func ErrInvalidDSN(cause error) error {
 	msg := "Postgres DSN is malformed"

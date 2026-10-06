@@ -6,15 +6,15 @@ import (
 	"github.com/BenyaChef/micro/infrastructure/errors"
 )
 
+const (
+	ErrCodeListenFailed   = errors.ErrorCode("60ac51cc-010")
+	ErrCodeShutdownFailed = errors.ErrorCode("60ac51cc-011")
+)
+
 var (
 	ErrLoggerIsRequired      = errors.NewError("SYS", "RESTServer: Logger is required")
 	ErrServiceNameIsRequired = errors.NewError("SYS", "RESTServer: ServiceName is required")
 	ErrPortIsRequired        = errors.NewError("SYS", "RESTServer: Port is required")
-)
-
-const (
-	ErrCodeListenFailed   = errors.ErrorCode("60ac51cc-010")
-	ErrCodeShutdownFailed = errors.ErrorCode("60ac51cc-011")
 )
 
 func ErrListenFailed(addr string, cause error) error {

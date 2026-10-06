@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package micro.base.schema;
+
+option go_package = "github.com/BenyaChef/micro/infrastructure/grpcserver/grpcmodel";
+
+message Error {
+  string code = 1;
+  string msg = 2;
+}

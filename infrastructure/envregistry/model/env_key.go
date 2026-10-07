@@ -27,3 +27,7 @@ const (
 const (
 	KeyPasswordHashCost EnvKey = "PASSWORD_HASH_COST"
 )
+
+const (
+	KeyAuthGRPCAddr EnvKey = "AUTH_GRPC_ADDR"
+)

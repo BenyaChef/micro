@@ -4,15 +4,11 @@ import (
 	"fmt"
 	"os"
 
-	envregistrymodel "github.com/BenyaChef/micro/infrastructure/envregistry/model"
+	"github.com/BenyaChef/micro/blog/initservice"
 	"github.com/BenyaChef/micro/infrastructure/initinfra"
-	"github.com/BenyaChef/micro/infrastructure/restserver"
 )
 
-const (
-	serviceName = "blog"
-	defaultPort = "8082"
-)
+const serviceName = "blog"
 
 func main() {
 	if err := run(); err != nil {
@@ -22,27 +18,20 @@ func main() {
 }
 
 func run() error {
-	container, err := initinfra.Bootstrap(serviceName)
+	infra, err := initinfra.Bootstrap(serviceName)
 	if err != nil {
-		return err
-	}
-
-	env := container.Env()
-
-	server, err := restserver.NewBuilder().
-		LogPublisher(container.LogPublisher()).
-		ServiceName(serviceName).
-		Port(env.StringDefault(envregistrymodel.KeyRestPort, defaultPort)).
-		Build()
-	if err != nil {
-		return err
-	}
-	if err := env.Err(); err != nil {
 		return err
 	}
 
 	ctx, stop := initinfra.SignalContext()
 	defer stop()
 
-	return server.Run(ctx)
+	container, err := initservice.NewDependencyContainer(ctx, infra, serviceName)
+	if err != nil {
+		return err
+	}
+
+	defer container.Close(ctx)
+
+	return container.RESTServer().Run(ctx)
 }

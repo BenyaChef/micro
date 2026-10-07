@@ -33,7 +33,7 @@ func run() error {
 		return err
 	}
 
-	defer container.Close()
+	defer container.Close(ctx)
 
 	group, groupCtx := errgroup.WithContext(ctx)
 

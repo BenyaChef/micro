@@ -47,8 +47,11 @@ curl localhost:8081/healthz     # {"status":"ok","service":"auth"}
 
 ## Статус
 
-Этап 6 из 10. Готова инфраструктура (логгер, env, Postgres, REST и gRPC
-серверы с graceful shutdown) и сервис `auth` целиком: регистрация, логин,
-`/auth/me` по REST и `ValidateToken` по gRPC для других сервисов.
+Этап 7 из 10. Готовы два сервиса из трёх:
 
-Дальше: blog (этап 7), затем Kafka и notification.
+- `auth` — регистрация, логин, `/auth/me` по REST и `ValidateToken` по gRPC
+- `blog` — CRUD статей: чтение публичное, запись только по токену, править и
+  удалять может лишь автор. Токен blog не разбирает сам — спрашивает `auth`
+  по gRPC
+
+Дальше: Kafka (этап 8) и notification (этап 9).

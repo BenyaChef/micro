@@ -60,7 +60,7 @@ func NewDependencyContainer(ctx context.Context, infra *initinfra.Container, ser
 
 	for _, initStep := range initChain {
 		if err := initStep(); err != nil {
-			container.Close()
+			container.Close(ctx)
 
 			return nil, err
 		}
@@ -77,7 +77,7 @@ func (c *DependencyContainer) GRPCServer() grpcserverinterface.GRPCServer {
 	return c.grpcServer
 }
 
-func (c *DependencyContainer) Close() {
+func (c *DependencyContainer) Close(_ context.Context) {
 	if c.postgresClient != nil {
 		c.postgresClient.Close()
 	}

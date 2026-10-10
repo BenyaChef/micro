@@ -5,6 +5,7 @@ import (
 
 	authgrpccontroller "github.com/BenyaChef/micro/auth/adapter/controller/grpc/auth"
 	authrestcontroller "github.com/BenyaChef/micro/auth/adapter/controller/rest/auth"
+	eventinterface "github.com/BenyaChef/micro/auth/boundary/event"
 	repositoryinterface "github.com/BenyaChef/micro/auth/boundary/repository"
 	serviceinterface "github.com/BenyaChef/micro/auth/boundary/service"
 	usecaseinterface "github.com/BenyaChef/micro/auth/boundary/usecase"
@@ -12,6 +13,7 @@ import (
 	grpcserverinterface "github.com/BenyaChef/micro/infrastructure/grpcserver/interface"
 	"github.com/BenyaChef/micro/infrastructure/initinfra"
 	"github.com/BenyaChef/micro/infrastructure/postgres"
+	"github.com/BenyaChef/micro/infrastructure/queueserver"
 	"github.com/BenyaChef/micro/infrastructure/restserver"
 	restserverinterface "github.com/BenyaChef/micro/infrastructure/restserver/interface"
 )
@@ -23,16 +25,18 @@ type DependencyContainer struct {
 	environments *environments
 
 	postgresClient *postgres.Client
+	queuePublisher *queueserver.Publisher
 	restServer     *restserver.Server
 	grpcServer     *grpcserver.Server
 
 	tokenService   serviceinterface.TokenService
 	passwordHasher serviceinterface.PasswordHasher
 
-	userRepository repositoryinterface.UserRepository
-	tokenUseCase   usecaseinterface.TokenUseCase
-	userUseCase    usecaseinterface.UserUseCase
-	authController *authrestcontroller.AuthController
+	userRepository     repositoryinterface.UserRepository
+	userEventPublisher eventinterface.UserEventPublisher
+	tokenUseCase       usecaseinterface.TokenUseCase
+	userUseCase        usecaseinterface.UserUseCase
+	authController     *authrestcontroller.AuthController
 
 	authGRPCController *authgrpccontroller.AuthController
 }
@@ -48,6 +52,8 @@ func NewDependencyContainer(ctx context.Context, infra *initinfra.Container, ser
 		container.initEnvironments,
 		func() error { return container.initPostgres(ctx) },
 		container.initRepositories,
+		container.initQueuePublisher,
+		container.initEventPublishers,
 		container.initServices,
 		container.initUseCases,
 		container.initRESTServer,
@@ -77,7 +83,11 @@ func (c *DependencyContainer) GRPCServer() grpcserverinterface.GRPCServer {
 	return c.grpcServer
 }
 
-func (c *DependencyContainer) Close(_ context.Context) {
+func (c *DependencyContainer) Close(ctx context.Context) {
+	if c.queuePublisher != nil {
+		c.queuePublisher.Close(ctx)
+	}
+
 	if c.postgresClient != nil {
 		c.postgresClient.Close()
 	}

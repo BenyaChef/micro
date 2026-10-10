@@ -49,6 +49,7 @@ func (c *DependencyContainer) initUseCases() error {
 		UserRepository(c.userRepository).
 		TokenUseCase(tokenUseCase).
 		PasswordHasher(c.passwordHasher).
+		UserEventPublisher(c.userEventPublisher).
 		LogPublisher(c.infra.LogPublisher()).
 		Build()
 	if err != nil {

@@ -20,6 +20,8 @@ var (
 	ErrTokenUseCaseIsRequired   = errors.NewError("SYS", "UserUseCase: TokenUseCase is required")
 	ErrPasswordHasherIsRequired = errors.NewError("SYS", "UserUseCase: PasswordHasher is required")
 	ErrLogPublisherIsRequired   = errors.NewError("SYS", "UserUseCase: LogPublisher is required")
+
+	ErrUserEventPublisherIsRequired = errors.NewError("SYS", "UserUseCase: UserEventPublisher is required")
 )
 
 var (

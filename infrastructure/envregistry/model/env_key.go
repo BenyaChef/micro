@@ -31,3 +31,7 @@ const (
 const (
 	KeyAuthGRPCAddr EnvKey = "AUTH_GRPC_ADDR"
 )
+
+const (
+	KeyKafkaBrokers EnvKey = "KAFKA_BROKERS"
+)

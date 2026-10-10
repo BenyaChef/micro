@@ -3,6 +3,7 @@ package userusecase
 import (
 	"errors"
 
+	eventinterface "github.com/BenyaChef/micro/auth/boundary/event"
 	repositoryinterface "github.com/BenyaChef/micro/auth/boundary/repository"
 	serviceinterface "github.com/BenyaChef/micro/auth/boundary/service"
 	usecaseinterface "github.com/BenyaChef/micro/auth/boundary/usecase"
@@ -10,10 +11,11 @@ import (
 )
 
 type Builder struct {
-	userRepository repositoryinterface.UserRepository
-	tokenUseCase   usecaseinterface.TokenUseCase
-	passwordHasher serviceinterface.PasswordHasher
-	logPublisher   loggerinterface.LogPublisher
+	userRepository     repositoryinterface.UserRepository
+	tokenUseCase       usecaseinterface.TokenUseCase
+	passwordHasher     serviceinterface.PasswordHasher
+	userEventPublisher eventinterface.UserEventPublisher
+	logPublisher       loggerinterface.LogPublisher
 }
 
 func NewBuilder() *Builder {
@@ -38,6 +40,12 @@ func (b *Builder) PasswordHasher(passwordHasher serviceinterface.PasswordHasher)
 	return b
 }
 
+func (b *Builder) UserEventPublisher(userEventPublisher eventinterface.UserEventPublisher) *Builder {
+	b.userEventPublisher = userEventPublisher
+
+	return b
+}
+
 func (b *Builder) LogPublisher(logPublisher loggerinterface.LogPublisher) *Builder {
 	b.logPublisher = logPublisher
 
@@ -50,11 +58,12 @@ func (b *Builder) Build() (*UserUseCase, error) {
 	}
 
 	return &UserUseCase{
-		userRepository: b.userRepository,
-		tokenUseCase:   b.tokenUseCase,
-		passwordHasher: b.passwordHasher,
-		logPublisher:   b.logPublisher,
-		errorProcessor: newErrorProcessor(b.logPublisher),
+		userRepository:     b.userRepository,
+		tokenUseCase:       b.tokenUseCase,
+		passwordHasher:     b.passwordHasher,
+		userEventPublisher: b.userEventPublisher,
+		logPublisher:       b.logPublisher,
+		errorProcessor:     newErrorProcessor(b.logPublisher),
 	}, nil
 }
 
@@ -71,6 +80,10 @@ func (b *Builder) checkRequiredFields() error {
 
 	if b.passwordHasher == nil {
 		errs = append(errs, ErrPasswordHasherIsRequired)
+	}
+
+	if b.userEventPublisher == nil {
+		errs = append(errs, ErrUserEventPublisherIsRequired)
 	}
 
 	if b.logPublisher == nil {

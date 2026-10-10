@@ -28,6 +28,7 @@ type UserUseCaseShould struct {
 	userRepository *userusecasemock.UserRepositoryMock
 	passwordHasher *userusecasemock.PasswordHasherMock
 	tokenUseCase   *userusecasemock.TokenUseCaseMock
+	eventPublisher *userusecasemock.UserEventPublisherMock
 	useCase        *userusecase.UserUseCase
 }
 
@@ -40,11 +41,13 @@ func (s *UserUseCaseShould) SetupTest() {
 	s.userRepository = userusecasemock.NewUserRepositoryMock()
 	s.passwordHasher = userusecasemock.NewPasswordHasherMock()
 	s.tokenUseCase = userusecasemock.NewTokenUseCaseMock()
+	s.eventPublisher = userusecasemock.NewUserEventPublisherMock()
 
 	useCase, err := userusecase.NewBuilder().
 		UserRepository(s.userRepository).
 		PasswordHasher(s.passwordHasher).
 		TokenUseCase(s.tokenUseCase).
+		UserEventPublisher(s.eventPublisher).
 		LogPublisher(loggerteststub.NewLogPublisherStub()).
 		Build()
 	require.NoError(s.T(), err)
@@ -64,6 +67,7 @@ func (s *UserUseCaseShould) TestBuild_WithoutParams_ReturnError() {
 	assert.True(s.T(), errors.Is(err, userusecase.ErrUserRepositoryIsRequired))
 	assert.True(s.T(), errors.Is(err, userusecase.ErrTokenUseCaseIsRequired))
 	assert.True(s.T(), errors.Is(err, userusecase.ErrPasswordHasherIsRequired))
+	assert.True(s.T(), errors.Is(err, userusecase.ErrUserEventPublisherIsRequired))
 	assert.True(s.T(), errors.Is(err, userusecase.ErrLogPublisherIsRequired))
 }
 
@@ -205,4 +209,40 @@ func (s *UserUseCaseShould) TestGetByID_Found_ReturnUser() {
 
 	require.NoError(s.T(), err)
 	assert.Same(s.T(), expected, user)
+}
+
+func (s *UserUseCaseShould) TestRegister_Success_PublishesEventWithUserAndEmail() {
+	user, err := s.useCase.Register(s.T().Context(), s.registerData())
+
+	require.NoError(s.T(), err)
+	assert.Equal(s.T(), 1, s.eventPublisher.Calls)
+	assert.Equal(s.T(), user.ID(), s.eventPublisher.LastUserID)
+	assert.Equal(s.T(), user.Email(), s.eventPublisher.LastEmail)
+}
+
+func (s *UserUseCaseShould) TestRegister_PublishFails_RegistrationStillSucceeds() {
+	s.eventPublisher.RegisteredFunc = func(
+		context.Context, commonuserentity.UserID, emailprimitive.Email,
+	) error {
+		return errors.New("kafka is down")
+	}
+
+	user, err := s.useCase.Register(s.T().Context(), s.registerData())
+
+	require.NoError(s.T(), err)
+	require.NotNil(s.T(), user)
+	assert.Same(s.T(), user, s.userRepository.Inserted)
+	assert.Equal(s.T(), 1, s.eventPublisher.Calls)
+}
+
+func (s *UserUseCaseShould) TestRegister_InsertFails_EventIsNotPublished() {
+	s.userRepository.InsertFunc = func(context.Context, *userentity.User) error {
+		return errors.New("database is down")
+	}
+
+	user, err := s.useCase.Register(s.T().Context(), s.registerData())
+
+	assert.Nil(s.T(), user)
+	require.Error(s.T(), err)
+	assert.Equal(s.T(), 0, s.eventPublisher.Calls)
 }

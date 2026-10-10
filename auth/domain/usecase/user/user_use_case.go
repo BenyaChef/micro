@@ -3,6 +3,7 @@ package userusecase
 import (
 	"context"
 
+	eventinterface "github.com/BenyaChef/micro/auth/boundary/event"
 	boundarymodel "github.com/BenyaChef/micro/auth/boundary/model"
 	repositoryinterface "github.com/BenyaChef/micro/auth/boundary/repository"
 	serviceinterface "github.com/BenyaChef/micro/auth/boundary/service"
@@ -18,11 +19,12 @@ const MinPasswordLength = 8
 var _ usecaseinterface.UserUseCase = (*UserUseCase)(nil)
 
 type UserUseCase struct {
-	userRepository repositoryinterface.UserRepository
-	tokenUseCase   usecaseinterface.TokenUseCase
-	passwordHasher serviceinterface.PasswordHasher
-	logPublisher   loggerinterface.LogPublisher
-	errorProcessor *errorProcessor
+	userRepository     repositoryinterface.UserRepository
+	tokenUseCase       usecaseinterface.TokenUseCase
+	passwordHasher     serviceinterface.PasswordHasher
+	userEventPublisher eventinterface.UserEventPublisher
+	logPublisher       loggerinterface.LogPublisher
+	errorProcessor     *errorProcessor
 }
 
 func (uc *UserUseCase) Register(ctx context.Context, data *boundarymodel.RegisterData) (*userentity.User, error) {
@@ -53,7 +55,15 @@ func (uc *UserUseCase) Register(ctx context.Context, data *boundarymodel.Registe
 		return nil, uc.errorProcessor.LogAndReturnOperationError(ctx, err)
 	}
 
+	uc.publishRegistered(ctx, user)
+
 	return user, nil
+}
+
+func (uc *UserUseCase) publishRegistered(ctx context.Context, user *userentity.User) {
+	if err := uc.userEventPublisher.Registered(ctx, user.ID(), user.Email()); err != nil {
+		uc.logPublisher.LogError(ctx, err)
+	}
 }
 
 func (uc *UserUseCase) Login(ctx context.Context, data *boundarymodel.LoginData) (*boundarymodel.LoginResult, error) {

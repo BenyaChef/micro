@@ -8,8 +8,9 @@ import (
 )
 
 const (
-	defaultRESTPort = "8081"
-	defaultGRPCPort = "9091"
+	defaultRESTPort     = "8081"
+	defaultGRPCPort     = "9091"
+	defaultKafkaBrokers = "localhost:29092"
 )
 
 type environments struct {
@@ -21,6 +22,7 @@ type environments struct {
 	jwtSecret        string
 	jwtTTL           time.Duration
 	passwordHashCost int
+	kafkaBrokers     string
 }
 
 func (c *DependencyContainer) initEnvironments() error {
@@ -35,6 +37,7 @@ func (c *DependencyContainer) initEnvironments() error {
 		jwtSecret:        env.String(envregistrymodel.KeyJWTSecret),
 		jwtTTL:           env.Duration(envregistrymodel.KeyJWTTTL, jwtmodel.DefaultTTL),
 		passwordHashCost: env.Int(envregistrymodel.KeyPasswordHashCost, 0),
+		kafkaBrokers:     env.StringDefault(envregistrymodel.KeyKafkaBrokers, defaultKafkaBrokers),
 	}
 
 	return env.Err()

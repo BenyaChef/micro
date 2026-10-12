@@ -4,15 +4,13 @@ import (
 	"fmt"
 	"os"
 
-	envregistrymodel "github.com/BenyaChef/micro/infrastructure/envregistry/model"
+	"golang.org/x/sync/errgroup"
+
 	"github.com/BenyaChef/micro/infrastructure/initinfra"
-	"github.com/BenyaChef/micro/infrastructure/restserver"
+	"github.com/BenyaChef/micro/notification/initservice"
 )
 
-const (
-	serviceName = "notification"
-	defaultPort = "8083"
-)
+const serviceName = "notification"
 
 func main() {
 	if err := run(); err != nil {
@@ -22,27 +20,30 @@ func main() {
 }
 
 func run() error {
-	container, err := initinfra.Bootstrap(serviceName)
+	infra, err := initinfra.Bootstrap(serviceName)
 	if err != nil {
-		return err
-	}
-
-	env := container.Env()
-
-	server, err := restserver.NewBuilder().
-		LogPublisher(container.LogPublisher()).
-		ServiceName(serviceName).
-		Port(env.StringDefault(envregistrymodel.KeyRestPort, defaultPort)).
-		Build()
-	if err != nil {
-		return err
-	}
-	if err := env.Err(); err != nil {
 		return err
 	}
 
 	ctx, stop := initinfra.SignalContext()
 	defer stop()
 
-	return server.Run(ctx)
+	container, err := initservice.NewDependencyContainer(ctx, infra, serviceName)
+	if err != nil {
+		return err
+	}
+
+	defer container.Close(ctx)
+
+	group, groupCtx := errgroup.WithContext(ctx)
+
+	group.Go(func() error {
+		return container.RESTServer().Run(groupCtx)
+	})
+
+	group.Go(func() error {
+		return container.QueueConsumer().Run(groupCtx)
+	})
+
+	return group.Wait()
 }

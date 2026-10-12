@@ -34,4 +34,5 @@ const (
 
 const (
 	KeyKafkaBrokers EnvKey = "KAFKA_BROKERS"
+	KeyKafkaGroupID EnvKey = "KAFKA_GROUP_ID"
 )

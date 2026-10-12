@@ -11,49 +11,45 @@ import (
 	queueservermodel "github.com/BenyaChef/micro/infrastructure/queueserver/model"
 )
 
-type Builder struct {
+type PublisherBuilder struct {
 	brokers      []string
 	logPublisher loggerinterface.LogPublisher
 	retryMax     int
 	timeout      time.Duration
 }
 
-func NewBuilder() *Builder {
-	return &Builder{
+func NewPublisherBuilder() *PublisherBuilder {
+	return &PublisherBuilder{
 		retryMax: queueservermodel.DefaultRetryMax,
 		timeout:  queueservermodel.DefaultTimeout * time.Second,
 	}
 }
 
-func (b *Builder) Brokers(brokers string) *Builder {
-	for _, broker := range strings.Split(brokers, ",") {
-		if trimmed := strings.TrimSpace(broker); trimmed != "" {
-			b.brokers = append(b.brokers, trimmed)
-		}
-	}
+func (b *PublisherBuilder) Brokers(brokers string) *PublisherBuilder {
+	b.brokers = splitAndTrim(brokers)
 
 	return b
 }
 
-func (b *Builder) LogPublisher(logPublisher loggerinterface.LogPublisher) *Builder {
+func (b *PublisherBuilder) LogPublisher(logPublisher loggerinterface.LogPublisher) *PublisherBuilder {
 	b.logPublisher = logPublisher
 
 	return b
 }
 
-func (b *Builder) RetryMax(retryMax int) *Builder {
+func (b *PublisherBuilder) RetryMax(retryMax int) *PublisherBuilder {
 	b.retryMax = retryMax
 
 	return b
 }
 
-func (b *Builder) Timeout(timeout time.Duration) *Builder {
+func (b *PublisherBuilder) Timeout(timeout time.Duration) *PublisherBuilder {
 	b.timeout = timeout
 
 	return b
 }
 
-func (b *Builder) Build() (*Publisher, error) {
+func (b *PublisherBuilder) Build() (*Publisher, error) {
 	if err := b.checkRequiredFields(); err != nil {
 		return nil, err
 	}
@@ -72,7 +68,7 @@ func (b *Builder) Build() (*Publisher, error) {
 	return &Publisher{producer: producer, logPublisher: b.logPublisher, brokers: b.brokers}, nil
 }
 
-func (b *Builder) checkRequiredFields() error {
+func (b *PublisherBuilder) checkRequiredFields() error {
 	var errs []error
 
 	if len(b.brokers) == 0 {

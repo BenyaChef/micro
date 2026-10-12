@@ -6,7 +6,7 @@ import (
 )
 
 func (c *DependencyContainer) initQueuePublisher() error {
-	publisher, err := queueserver.NewBuilder().
+	publisher, err := queueserver.NewPublisherBuilder().
 		Brokers(c.environments.kafkaBrokers).
 		LogPublisher(c.infra.LogPublisher()).
 		Build()

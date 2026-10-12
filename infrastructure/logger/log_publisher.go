@@ -17,9 +17,22 @@ func (p *LogPublisher) LogError(ctx context.Context, errs ...error) {
 			continue
 		}
 
-		p.log.ErrorContext(ctx, err.Error(),
+		level := apperrors.LevelOf(err)
+		attrs := []any{
 			slog.String("error_code", apperrors.CodeOf(err).String()),
-		)
+			slog.String("error_level", level.String()),
+		}
+
+		switch level {
+		case apperrors.LevelInfo:
+			p.log.InfoContext(ctx, err.Error(), attrs...)
+		case apperrors.LevelWarn:
+			p.log.WarnContext(ctx, err.Error(), attrs...)
+		case apperrors.LevelError, apperrors.LevelCritical:
+			p.log.ErrorContext(ctx, err.Error(), attrs...)
+		default:
+			p.log.ErrorContext(ctx, err.Error(), attrs...)
+		}
 	}
 }
 

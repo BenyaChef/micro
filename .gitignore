@@ -1,5 +1,8 @@
 # Binaries
 /bin/
+/auth/auth
+/blog/blog
+/notification/notification
 
 # Test and coverage
 *.test

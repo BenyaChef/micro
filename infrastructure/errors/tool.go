@@ -54,6 +54,15 @@ func MessageOf(err error) string {
 	return err.Error()
 }
 
+func LevelOf(err error) ErrorLevel {
+	var customErr *Error
+	if errors.As(err, &customErr) {
+		return customErr.Level()
+	}
+
+	return LevelError
+}
+
 func CodeOf(err error) ErrorCode {
 	var customErr *Error
 	if errors.As(err, &customErr) {

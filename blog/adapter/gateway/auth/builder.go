@@ -34,9 +34,8 @@ func (b *Builder) Build() (*AuthGateway, error) {
 	}
 
 	return &AuthGateway{
-		authGateway:    b.authGateway,
-		logPublisher:   b.logPublisher,
-		errorProcessor: newErrorProcessor(b.logPublisher),
+		authGateway:  b.authGateway,
+		logPublisher: b.logPublisher,
 	}, nil
 }
 

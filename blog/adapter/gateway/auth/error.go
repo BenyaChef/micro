@@ -1,11 +1,6 @@
 package authgateway
 
-import (
-	"context"
-
-	"github.com/BenyaChef/micro/infrastructure/errors"
-	loggerinterface "github.com/BenyaChef/micro/infrastructure/logger/interface"
-)
+import "github.com/BenyaChef/micro/infrastructure/errors"
 
 const (
 	ErrCodeTokenRejected   = errors.ErrorCode("2564e485-030")
@@ -27,18 +22,4 @@ func ErrAuthUnavailable(cause error) error {
 	return errors.NewErrorWithLevelAndCause(
 		ErrCodeAuthUnavailable, "Auth service is unavailable", errors.LevelError, cause,
 	)
-}
-
-type errorProcessor struct {
-	logPublisher loggerinterface.LogPublisher
-}
-
-func newErrorProcessor(logPublisher loggerinterface.LogPublisher) *errorProcessor {
-	return &errorProcessor{logPublisher: logPublisher}
-}
-
-func (p *errorProcessor) LogAndReturn(ctx context.Context, err error) error {
-	p.logPublisher.LogError(ctx, err)
-
-	return err
 }

@@ -30,7 +30,7 @@ func (h *RegisteredHandler) Handle(ctx context.Context, event *commonautheventmo
 
 	inserted, err := h.notificationRepository.Insert(ctx, notification)
 	if err != nil {
-		return h.errorProcessor.LogAndReturn(ctx, ErrStoreFailed(event.EventID, err))
+		return ErrStoreFailed(event.EventID, err)
 	}
 
 	if !inserted {

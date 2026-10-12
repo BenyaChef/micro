@@ -14,9 +14,8 @@ import (
 var _ gatewayinterface.AuthGateway = (*AuthGateway)(nil)
 
 type AuthGateway struct {
-	authGateway    commonauthgatewayinterface.AuthGateway
-	logPublisher   loggerinterface.LogPublisher
-	errorProcessor *errorProcessor
+	authGateway  commonauthgatewayinterface.AuthGateway
+	logPublisher loggerinterface.LogPublisher
 }
 
 func (g *AuthGateway) ValidateToken(ctx context.Context, rawToken string) (commonuserentity.UserID, error) {
@@ -26,8 +25,8 @@ func (g *AuthGateway) ValidateToken(ctx context.Context, rawToken string) (commo
 	}
 
 	if errors.EqualByCode(err, commonauthgateway.ErrCodeCallFailed) {
-		return commonuserentity.UserID{}, g.errorProcessor.LogAndReturn(ctx, ErrAuthUnavailable(err))
+		return commonuserentity.UserID{}, ErrAuthUnavailable(err)
 	}
 
-	return commonuserentity.UserID{}, g.errorProcessor.LogAndReturn(ctx, ErrTokenRejected(err))
+	return commonuserentity.UserID{}, ErrTokenRejected(err)
 }

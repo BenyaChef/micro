@@ -41,8 +41,6 @@ func (s *Server) Run(ctx context.Context) error {
 		if err := s.server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			listenFailed <- ErrListenFailed(s.server.Addr, err)
 		}
-
-		close(listenFailed)
 	}()
 
 	select {

@@ -39,7 +39,7 @@ func (uc *UserUseCase) Register(ctx context.Context, data *boundarymodel.Registe
 
 	existing, err := uc.userRepository.GetByEmail(ctx, email)
 	if err != nil {
-		return nil, uc.errorProcessor.LogAndReturnOperationError(ctx, err)
+		return nil, uc.errorProcessor.WrapOperationError(err)
 	}
 
 	if existing != nil {
@@ -52,7 +52,7 @@ func (uc *UserUseCase) Register(ctx context.Context, data *boundarymodel.Registe
 	}
 
 	if err := uc.userRepository.Insert(ctx, user); err != nil {
-		return nil, uc.errorProcessor.LogAndReturnOperationError(ctx, err)
+		return nil, uc.errorProcessor.WrapOperationError(err)
 	}
 
 	uc.publishRegistered(ctx, user)
@@ -78,7 +78,7 @@ func (uc *UserUseCase) Login(ctx context.Context, data *boundarymodel.LoginData)
 
 	user, err := uc.userRepository.GetByEmail(ctx, email)
 	if err != nil {
-		return nil, uc.errorProcessor.LogAndReturnOperationError(ctx, err)
+		return nil, uc.errorProcessor.WrapOperationError(err)
 	}
 
 	if user == nil {
@@ -99,7 +99,7 @@ func (uc *UserUseCase) GetByID(ctx context.Context, userID commonuserentity.User
 
 	user, err := uc.userRepository.GetByID(ctx, userID)
 	if err != nil {
-		return nil, uc.errorProcessor.LogAndReturnOperationError(ctx, err)
+		return nil, uc.errorProcessor.WrapOperationError(err)
 	}
 
 	if user == nil {
@@ -129,7 +129,7 @@ func (uc *UserUseCase) parseCredentials(ctx context.Context, rawEmail, rawPasswo
 func (uc *UserUseCase) buildUser(ctx context.Context, email emailprimitive.Email, rawPassword string) (*userentity.User, error) {
 	rawHash, err := uc.passwordHasher.Hash(rawPassword)
 	if err != nil {
-		return nil, uc.errorProcessor.LogAndReturnOperationError(ctx, err)
+		return nil, uc.errorProcessor.WrapOperationError(err)
 	}
 
 	passwordHash, err := userentity.PasswordHashFrom(rawHash)

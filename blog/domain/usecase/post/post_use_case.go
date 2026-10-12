@@ -50,7 +50,7 @@ func (uc *PostUseCase) Create(ctx context.Context, input *boundarymodel.CreatePo
 	}
 
 	if err := uc.postRepository.Insert(ctx, post); err != nil {
-		return nil, uc.errorProcessor.LogAndReturnOperationError(ctx, err)
+		return nil, uc.errorProcessor.WrapOperationError(err)
 	}
 
 	return post, nil
@@ -63,7 +63,7 @@ func (uc *PostUseCase) GetByID(ctx context.Context, postID postentity.PostID) (*
 
 	post, err := uc.postRepository.GetByID(ctx, postID)
 	if err != nil {
-		return nil, uc.errorProcessor.LogAndReturnOperationError(ctx, err)
+		return nil, uc.errorProcessor.WrapOperationError(err)
 	}
 
 	if post == nil {
@@ -82,7 +82,7 @@ func (uc *PostUseCase) List(ctx context.Context, input *boundarymodel.ListPostsI
 
 	posts, err := uc.postRepository.List(ctx, limit, offset)
 	if err != nil {
-		return nil, uc.errorProcessor.LogAndReturnOperationError(ctx, err)
+		return nil, uc.errorProcessor.WrapOperationError(err)
 	}
 
 	return posts, nil
@@ -116,7 +116,7 @@ func (uc *PostUseCase) Update(ctx context.Context, input *boundarymodel.UpdatePo
 	}
 
 	if err := uc.postRepository.Update(ctx, updated); err != nil {
-		return nil, uc.errorProcessor.LogAndReturnOperationError(ctx, err)
+		return nil, uc.errorProcessor.WrapOperationError(err)
 	}
 
 	return updated, nil
@@ -128,7 +128,7 @@ func (uc *PostUseCase) Delete(ctx context.Context, postID postentity.PostID, aut
 	}
 
 	if err := uc.postRepository.Delete(ctx, postID); err != nil {
-		return uc.errorProcessor.LogAndReturnOperationError(ctx, err)
+		return uc.errorProcessor.WrapOperationError(err)
 	}
 
 	return nil

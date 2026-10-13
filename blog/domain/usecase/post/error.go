@@ -61,8 +61,6 @@ func (p *errorProcessor) LogAndReturn(ctx context.Context, err error) error {
 	return err
 }
 
-// Нижний слой уже залогировал причину, поэтому здесь только оборачиваем:
-// иначе одна авария даёт две строки в логе.
 func (p *errorProcessor) WrapOperationError(cause error) error {
 	return ErrOperationFailed(cause)
 }

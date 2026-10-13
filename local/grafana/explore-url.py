@@ -1,5 +1,3 @@
-"""Собирает ссылку на Grafana Explore с подставленным запросом логов."""
-
 import json
 import pathlib
 import shutil
@@ -28,7 +26,6 @@ params = urllib.parse.urlencode(
 url = f"{GRAFANA}/explore?{params}"
 
 if "--open" in sys.argv:
-    # Ссылка длиной под две тысячи символов, копировать её руками невозможно.
     opener = {"darwin": "open", "linux": "xdg-open"}.get(sys.platform)
     if opener and shutil.which(opener):
         subprocess.run([opener, url], check=False)

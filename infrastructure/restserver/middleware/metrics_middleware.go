@@ -30,8 +30,6 @@ func Metrics(monitor *infraotel.HTTPMonitor) func(http.Handler) http.Handler {
 	}
 }
 
-// Шаблон роута, а не фактический путь: иначе каждый UUID в URL породит
-// отдельную временную серию.
 func routePattern(request *http.Request) string {
 	routeContext := chi.RouteContext(request.Context())
 	if routeContext == nil {

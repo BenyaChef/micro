@@ -6,20 +6,14 @@ datasources:
     uid: micro-loki
     access: proxy
     url: http://loki:3100
-    # По умолчанию — Loki: Explore открывается сразу на логах.
-    # Дашборды указывают источник явно по uid, их это не трогает.
     isDefault: true
     editable: false
     jsonData:
       maxLines: 2000
-      # request_id в логе становится кликабельным: по клику открываются
-      # все строки этого запроса во всех сервисах.
       derivedFields:
         - name: request_id
           matcherType: regex
-          matcherRegex: '"request_id":"([^"]+)"'
-          # $$ — экранирование: Grafana раскрывает $VAR в файлах провижининга,
-          # и одинарный $ сожрал бы плейсхолдер как переменную окружения.
+          matcherRegex: 'req=([0-9a-f-]{36})'
           url: '{service=~"auth|blog|notification"} |= "$${__value.raw}"'
           datasourceUid: micro-loki
           urlDisplayLabel: Все строки этого запроса

@@ -31,7 +31,7 @@ func LogRequest(logPublisher loggerinterface.LogPublisher, excludedPaths ...stri
 				"method", request.Method,
 				"path", request.URL.Path,
 				"status", recorder.Status(),
-				"took", time.Since(started),
+				"took", time.Since(started).String(),
 				"request_id", restservermodel.RequestIDFrom(request.Context()),
 			}
 

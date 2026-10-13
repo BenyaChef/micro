@@ -28,8 +28,6 @@ func NewHTTPMonitor(meterProvider *sdkmetric.MeterProvider) (*HTTPMonitor, error
 	return &HTTPMonitor{requestDuration: requestDuration}, nil
 }
 
-// Счётчик запросов отдельно не нужен: у гистограммы есть _count,
-// из него и считается RPS.
 func (m *HTTPMonitor) RecordRequest(ctx context.Context, method, route string, status int, seconds float64) {
 	if m == nil {
 		return

@@ -72,8 +72,6 @@ func (b *Builder) Build(ctx context.Context) (*Provider, error) {
 		collectors.NewProcessCollector(collectors.ProcessCollectorOpts{}),
 	)
 
-	// target_info оставляем: по нему видно, чей это эндпоинт, если прийти
-	// на него curl'ом. В дашбордах сервис различается меткой job из скрейпа.
 	exporter, err := promexporter.New(
 		promexporter.WithRegisterer(promRegistry),
 		promexporter.WithoutScopeInfo(),

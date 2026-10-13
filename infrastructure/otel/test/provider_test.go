@@ -116,9 +116,6 @@ func (s *ProviderShould) TestKafkaMonitor_RecordsPublishAndProcess() {
 	assert.Contains(s.T(), body, `messaging_operation_result="error"`)
 }
 
-// Имя сервиса на сами метрики не навешивается: в дашбордах сервис различается
-// меткой job из конфига скрейпа. Но target_info оставлен, чтобы по эндпоинту
-// было видно, чей он.
 func (s *ProviderShould) TestScrape_ExposesServiceNameViaTargetInfo() {
 	body := s.scrape()
 

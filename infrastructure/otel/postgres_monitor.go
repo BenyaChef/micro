@@ -11,9 +11,6 @@ import (
 
 const postgresMeterName = "micro/infrastructure/postgres"
 
-// Регистрирует наблюдаемый gauge: значения снимаются в момент скрейпа,
-// отдельный горутин-семплер не нужен. Объекта, который кто-то дальше
-// вызывает, тут нет, поэтому возвращаем только ошибку.
 func RegisterPostgresMonitor(meterProvider *sdkmetric.MeterProvider, pool *pgxpool.Pool) error {
 	meter := meterProvider.Meter(postgresMeterName)
 

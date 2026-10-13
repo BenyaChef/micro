@@ -137,7 +137,7 @@ func (b *Builder) Build() (*Server, error) {
 	router := chi.NewRouter()
 	router.Use(restservermiddleware.RequestID)
 	router.Use(restservermiddleware.Recover(b.logPublisher))
-	router.Use(restservermiddleware.LogRequest(b.logPublisher))
+	router.Use(restservermiddleware.LogRequest(b.logPublisher, restservermodel.PathHealthz))
 	router.Use(restservermiddleware.Metrics(b.httpMonitor))
 
 	restserverhandler.RegisterHealth(router, b.serviceName, b.logPublisher)

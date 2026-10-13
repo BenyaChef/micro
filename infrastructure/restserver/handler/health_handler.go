@@ -11,7 +11,7 @@ import (
 )
 
 func RegisterHealth(router chi.Router, serviceName string, logPublisher loggerinterface.LogPublisher) {
-	router.Get("/healthz", func(writer http.ResponseWriter, request *http.Request) {
+	router.Get(restservermodel.PathHealthz, func(writer http.ResponseWriter, request *http.Request) {
 		writer.Header().Set("Content-Type", "application/json")
 		writer.WriteHeader(http.StatusOK)
 

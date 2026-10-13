@@ -36,6 +36,10 @@ func (p *LogPublisher) LogError(ctx context.Context, errs ...error) {
 	}
 }
 
+func (p *LogPublisher) LogErrorMsg(ctx context.Context, msg string, attrs ...any) {
+	p.log.ErrorContext(ctx, msg, attrs...)
+}
+
 func (p *LogPublisher) LogWarn(ctx context.Context, msg string, attrs ...any) {
 	p.log.WarnContext(ctx, msg, attrs...)
 }

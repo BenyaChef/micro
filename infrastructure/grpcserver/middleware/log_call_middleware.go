@@ -24,7 +24,7 @@ func LogCall(logPublisher loggerinterface.LogPublisher) grpc.UnaryServerIntercep
 		logPublisher.LogInfo(ctx, "grpc call handled",
 			"method", info.FullMethod,
 			"code", status.Code(err).String(),
-			"took", time.Since(started),
+			"took", time.Since(started).String(),
 		)
 
 		return response, err

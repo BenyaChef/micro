@@ -10,7 +10,7 @@ GOOSE := GOWORK=off go run github.com/pressly/goose/v3/cmd/goose@$(GOOSE_VERSION
 
 .PHONY: build vet lint test test-integration tidy clean proto \
 	run-auth run-blog run-notification \
-	up up-infra down down-v logs ps psql \
+	up up-infra down down-v logs ps psql explore \
 	migrate migrate-down migrate-status migrate-create
 build:
 	go build -o bin/ $(PKGS)
@@ -57,6 +57,9 @@ run-notification:
 	go run ./notification
 up:
 	$(COMPOSE) up -d --build --wait
+
+explore:
+	@python3 local/grafana/explore-url.py --open
 
 up-infra:
 	$(COMPOSE) up -d --wait postgres kafka

@@ -1,7 +1,7 @@
 {
   "uid": "micro-overview",
   "title": "micro — обзор сервисов",
-  "description": "RPS, латентность, коды ответов, gRPC, Kafka и пул соединений по трём сервисам",
+  "description": "RPS, латентность, коды ответов, gRPC, Kafka и пул соединений по трём сервисам. Логи — в Explore",
   "tags": [
     "micro"
   ],

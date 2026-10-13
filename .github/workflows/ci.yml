@@ -53,6 +53,26 @@ jobs:
             exit 1
           fi
 
+      - name: Манифесты собираются
+        run: |
+          set -euo pipefail
+          for service in auth blog notification; do
+            for stage in develop production; do
+              docker run --rm -v "$PWD:/w:ro" -w /w \
+                registry.k8s.io/kustomize/kustomize:v5.4.3 build "$service/deploy/$stage" > /dev/null
+              echo "  ok $service/$stage"
+            done
+          done
+
+      - name: Секреты не закоммичены
+        run: |
+          set -euo pipefail
+          if grep -rn --include='secret.yaml' -E '^\s{2}[A-Z_]+: ' */deploy/*/ | grep -v 'REPLACE_ME'; then
+            echo "В secret.yaml попало реальное значение"
+            exit 1
+          fi
+          echo "  в secret.yaml только заглушки"
+
       - name: Логи инфраструктуры при падении
         if: failure()
         run: make logs | tail -100

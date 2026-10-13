@@ -176,11 +176,44 @@ cp auth/.env.example auth/.env && set -a && . auth/.env && set +a
 go run ./auth
 ```
 
+## Раскладка каталогов
+
+| Каталог | Что это |
+|---|---|
+| `local/` | локальное окружение: docker-compose, prometheus, grafana |
+| `{service}/deploy/{develop,production}/` | манифесты Kubernetes для выкатки |
+
+Два разных смысла, которые легко перепутать: `local/` поднимает систему на твоей
+машине, `{service}/deploy/` описывает, как она живёт в кластере. Раскладка
+второго повторяет рабочую монорепу.
+
 ## CI
 
 `.github/workflows/ci.yml` на каждый push и PR: сборка, `go vet`, golangci-lint,
 тесты против живой базы, проверка что соседние модули не уехали в `require`,
-и сборка трёх docker-образов.
+сборка `kustomize build` всех шести оверлеев, проверка что в `secret.yaml` только
+заглушки, и сборка трёх docker-образов.
+
+## CD
+
+`.github/workflows/release.yml` по push в `main`:
+
+- `dorny/paths-filter` определяет, какие сервисы изменились. Правка `common/`
+  или `infrastructure/` пересобирает все три
+- сборка и push в GHCR с тегами `sha-<commit>` и `latest`
+- выкатка в кластер — шаг есть, но **включается только когда есть куда**:
+  переменная репозитория `DEPLOY_ENABLED=true` и секрет `KUBECONFIG` (base64).
+  Без них джоба честно пишет, что образ собран, а кластера нет
+
+Манифесты лежат в `{service}/deploy/{develop,production}/` и собираются
+kustomize. Секреты (`POSTGRES_DSN`, `JWT_SECRET`) в репозитории — заглушки
+`REPLACE_ME`; реальные значения кладутся в кластер отдельно:
+
+```sh
+kubectl -n develop create secret generic auth-micro \
+  --from-literal=POSTGRES_DSN='postgres://...' \
+  --from-literal=JWT_SECRET='...'
+```
 
 ## Статус
 

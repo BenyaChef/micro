@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: blog-micro
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9102"
+    prometheus.io/path: "/metrics"
+spec:
+  selector:
+    app: blog-micro
+  ports:
+    - name: api
+      protocol: TCP
+      port: 8082
+      targetPort: 8082
+    - name: metrics
+      protocol: TCP
+      port: 9102
+      targetPort: 9102

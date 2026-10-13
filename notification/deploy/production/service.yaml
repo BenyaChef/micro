@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-micro
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9103"
+    prometheus.io/path: "/metrics"
+spec:
+  selector:
+    app: notification-micro
+  ports:
+    - name: api
+      protocol: TCP
+      port: 8083
+      targetPort: 8083
+    - name: metrics
+      protocol: TCP
+      port: 9103
+      targetPort: 9103

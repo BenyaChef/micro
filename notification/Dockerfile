@@ -23,4 +23,7 @@ USER app
 
 COPY --from=builder /out/notification /usr/local/bin/notification
 
+EXPOSE 8083
+EXPOSE 9103
+
 ENTRYPOINT ["notification"]

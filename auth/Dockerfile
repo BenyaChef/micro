@@ -23,4 +23,8 @@ USER app
 
 COPY --from=builder /out/auth /usr/local/bin/auth
 
+EXPOSE 8081
+EXPOSE 9091
+EXPOSE 9101
+
 ENTRYPOINT ["auth"]

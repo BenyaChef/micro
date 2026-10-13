@@ -23,4 +23,7 @@ USER app
 
 COPY --from=builder /out/blog /usr/local/bin/blog
 
+EXPOSE 8082
+EXPOSE 9102
+
 ENTRYPOINT ["blog"]

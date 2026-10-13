@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-micro
+spec:
+  selector:
+    matchLabels:
+      app: auth-micro
+  template:
+    metadata:
+      labels:
+        app: auth-micro
+    spec:
+      containers:
+        - name: auth-micro
+          image: ghcr.io/benyachef/micro-auth:latest
+          ports:
+            - name: api
+              containerPort: 8081
+            - name: grpc
+              containerPort: 9091
+            - name: metrics
+              containerPort: 9101
+          envFrom:
+            - configMapRef:
+                name: auth-micro
+            - secretRef:
+                name: auth-micro
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: 8081
+            periodSeconds: 3
+            failureThreshold: 30
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8081
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8081
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+      terminationGracePeriodSeconds: 30

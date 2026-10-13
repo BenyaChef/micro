@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-micro
+spec:
+  selector:
+    matchLabels:
+      app: notification-micro
+  template:
+    metadata:
+      labels:
+        app: notification-micro
+    spec:
+      containers:
+        - name: notification-micro
+          image: ghcr.io/benyachef/micro-notification:latest
+          ports:
+            - name: api
+              containerPort: 8083
+            - name: metrics
+              containerPort: 9103
+          envFrom:
+            - configMapRef:
+                name: notification-micro
+            - secretRef:
+                name: notification-micro
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: 8083
+            periodSeconds: 3
+            failureThreshold: 30
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8083
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8083
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+      terminationGracePeriodSeconds: 30

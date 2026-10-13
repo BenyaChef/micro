@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blog-micro
+spec:
+  selector:
+    matchLabels:
+      app: blog-micro
+  template:
+    metadata:
+      labels:
+        app: blog-micro
+    spec:
+      containers:
+        - name: blog-micro
+          image: ghcr.io/benyachef/micro-blog:latest
+          ports:
+            - name: api
+              containerPort: 8082
+            - name: metrics
+              containerPort: 9102
+          envFrom:
+            - configMapRef:
+                name: blog-micro
+            - secretRef:
+                name: blog-micro
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "300m"
+              memory: "192Mi"
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: 8082
+            periodSeconds: 3
+            failureThreshold: 30
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8082
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8082
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+      terminationGracePeriodSeconds: 30

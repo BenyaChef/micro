@@ -1,0 +1,140 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**/deploy/**"
+      - "**.md"
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Окружение для выкатки
+        type: choice
+        options: [develop, production]
+        default: develop
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  changes:
+    name: Что изменилось
+    runs-on: ubuntu-latest
+    outputs:
+      auth: ${{ steps.filter.outputs.auth }}
+      blog: ${{ steps.filter.outputs.blog }}
+      notification: ${{ steps.filter.outputs.notification }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            auth:
+              - 'auth/**'
+              - 'common/**'
+              - 'infrastructure/**'
+              - 'go.work'
+            blog:
+              - 'blog/**'
+              - 'common/**'
+              - 'infrastructure/**'
+              - 'go.work'
+            notification:
+              - 'notification/**'
+              - 'common/**'
+              - 'infrastructure/**'
+              - 'go.work'
+
+  release:
+    name: ${{ matrix.service }}
+    needs: changes
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [auth, blog, notification]
+    steps:
+      - name: Пропустить, если сервис не менялся
+        id: should
+        run: |
+          case "${{ matrix.service }}" in
+            auth)         CHANGED="${{ needs.changes.outputs.auth }}" ;;
+            blog)         CHANGED="${{ needs.changes.outputs.blog }}" ;;
+            notification) CHANGED="${{ needs.changes.outputs.notification }}" ;;
+          esac
+          if [ "$CHANGED" != "true" ] && [ "${{ github.event_name }}" != "workflow_dispatch" ]; then
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.should.outputs.run == 'true'
+
+      - uses: docker/setup-buildx-action@v3
+        if: steps.should.outputs.run == 'true'
+
+      - name: Логин в GHCR
+        if: steps.should.outputs.run == 'true'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Теги образа
+        if: steps.should.outputs.run == 'true'
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/micro-${{ matrix.service }}
+          tags: |
+            type=sha,format=long
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Сборка и push
+        if: steps.should.outputs.run == 'true'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ matrix.service }}/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Выкатка в кластер
+        if: steps.should.outputs.run == 'true' && vars.DEPLOY_ENABLED == 'true'
+        env:
+          KUBECONFIG_DATA: ${{ secrets.KUBECONFIG }}
+          STAGE: ${{ inputs.environment || 'develop' }}
+          SERVICE: ${{ matrix.service }}
+          TAG: sha-${{ github.sha }}
+        run: |
+          set -euo pipefail
+
+          echo "$KUBECONFIG_DATA" | base64 -d > /tmp/kubeconfig
+          export KUBECONFIG=/tmp/kubeconfig
+
+          IMAGE="${REGISTRY}/${{ github.repository_owner }}/micro-${SERVICE}:${TAG}"
+
+          cd "${SERVICE}/deploy/${STAGE}"
+          kustomize edit set image "ghcr.io/benyachef/micro-${SERVICE}=${IMAGE}"
+          cd -
+
+          kubectl apply -k "${SERVICE}/deploy/${STAGE}"
+          kubectl -n "${STAGE}" rollout status "deployment/${SERVICE}-micro" --timeout=180s
+
+      - name: Выкатка пропущена
+        if: steps.should.outputs.run == 'true' && vars.DEPLOY_ENABLED != 'true'
+        run: |
+          echo "Образ собран и запушен, но кластера нет."
+          echo "Чтобы включить выкатку: переменная DEPLOY_ENABLED=true и секрет KUBECONFIG (base64)."

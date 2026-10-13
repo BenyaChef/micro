@@ -56,7 +56,9 @@ go run ./notification
 | Переменная | Назначение | По умолчанию |
 |---|---|---|
 | `LOG_LEVEL` | debug / info / warn / error | `info` |
+| `ENVIRONMENT` | Метка окружения в метриках | `local` |
 | `REST_PORT` | Порт `/healthz` | `8083` |
+| `METRICS_PORT` | Порт `/metrics` для Prometheus | `9103` |
 | `POSTGRES_DSN` | Строка подключения | обязательна |
 | `POSTGRES_MAX_CONNS` | Верхняя граница пула | `10` |
 | `POSTGRES_MIN_CONNS` | Тёплые соединения | `2` |

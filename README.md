@@ -59,6 +59,8 @@ make up        # поднимает всё: postgres, kafka, kafka-ui и три 
 | postgres | 5432 | |
 | kafka | 9092 внутри, 29092 с хоста | |
 | kafka-ui | 8080 | |
+| prometheus | 9090 | |
+| grafana | 3000 | логина нет, анонимный вход |
 
 ## Сквозной сценарий
 
@@ -79,7 +81,7 @@ curl -s -X POST localhost:8081/auth/register -H 'Content-Type: application/json'
   -d "{\"email\":\"$BOB\",\"password\":\"$PASS\"}"
 
 # 2. notification прочитал события и записал уведомления
-docker compose -f deploy/docker-compose.yml logs notification | grep 'welcome notification stored'
+docker compose -f local/docker-compose.yml logs notification | grep 'welcome notification stored'
 make psql
 #=> SELECT kind, user_id FROM notifications;
 
@@ -112,10 +114,37 @@ code -X DELETE localhost:8082/posts/$PID -H "Authorization: Bearer $A"  # 204
 Повторная доставка дубля не создаёт: вставка идёт через
 `ON CONFLICT (event_id) DO NOTHING`, в логе будет `event already handled`.
 
+## Мониторинг
+
+`make up` поднимает Prometheus и Grafana вместе с сервисами. Дашборд и источник
+данных прописаны в репозитории — настраивать руками ничего не нужно.
+
+Открыть <http://localhost:3000>: логина нет, сразу откроется дашборд
+**micro — обзор сервисов**. На нём RPS и латентность по сервисам, коды ответов
+(401 и 403 видны отдельно), gRPC-вызовы в auth, публикация и обработка Kafka,
+пул соединений Postgres.
+
+Метрики каждый сервис отдаёт на **отдельном порту** (`METRICS_PORT`: 9101, 9102,
+9103) — наружу из docker они не торчат, их забирает Prometheus по внутренней
+сети. Сырые метрики при локальном запуске:
+
+```sh
+curl localhost:9101/metrics      # auth
+```
+
+Устройство: OpenTelemetry SDK с Prometheus-экспортером, имена метрик по
+semantic conventions (`http.server.request.duration`, `rpc.server.duration`,
+`messaging.*`, `db.client.connection.count`). Коллектор не нужен — Prometheus
+скрейпит сервисы напрямую.
+
+Метка маршрута — **шаблон роута** (`/posts/{postID}`), а не фактический путь:
+иначе каждый UUID породил бы свою временную серию.
+
 ## Команды
 
 ```sh
-make up                 # поднять всё в docker, дождаться healthcheck'ов
+make up                 # поднять всё в docker (с пересборкой), дождаться healthcheck'ов
+make up-infra           # только postgres и kafka, для локального запуска сервисов
 make down               # остановить
 make down-v             # остановить и снести тома
 make logs               # хвост логов всех контейнеров
@@ -147,9 +176,15 @@ cp auth/.env.example auth/.env && set -a && . auth/.env && set +a
 go run ./auth
 ```
 
+## CI
+
+`.github/workflows/ci.yml` на каждый push и PR: сборка, `go vet`, golangci-lint,
+тесты против живой базы, проверка что соседние модули не уехали в `require`,
+и сборка трёх docker-образов.
+
 ## Статус
 
-Все 10 этапов плана закрыты. Работает сквозной сценарий выше: три сервиса в
+Все 10 этапов плана закрыты, сверх плана добавлены мониторинг и CI. Работает сквозной сценарий выше: три сервиса в
 docker, общение по REST, gRPC и Kafka, идемпотентная обработка событий,
 graceful shutdown с `stop_grace_period: 30s`.
 

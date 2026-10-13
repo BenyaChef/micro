@@ -5,6 +5,7 @@ import "github.com/BenyaChef/micro/infrastructure/restserver"
 func (c *DependencyContainer) initRESTServer() error {
 	server, err := restserver.NewBuilder().
 		LogPublisher(c.infra.LogPublisher()).
+		HTTPMonitor(c.infra.HTTPMonitor()).
 		ServiceName(c.serviceName).
 		Port(c.environments.restPort).
 		Build()

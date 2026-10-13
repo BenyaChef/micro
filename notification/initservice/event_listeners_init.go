@@ -21,6 +21,7 @@ func (c *DependencyContainer) initEventListeners() error {
 		GroupID(c.environments.kafkaGroupID).
 		Handler(listener).
 		LogPublisher(c.infra.LogPublisher()).
+		KafkaMonitor(c.infra.KafkaMonitor()).
 		Build()
 	if err != nil {
 		return err

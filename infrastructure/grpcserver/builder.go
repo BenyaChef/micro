@@ -10,10 +10,12 @@ import (
 	grpcservermiddleware "github.com/BenyaChef/micro/infrastructure/grpcserver/middleware"
 	grpcservermodel "github.com/BenyaChef/micro/infrastructure/grpcserver/model"
 	loggerinterface "github.com/BenyaChef/micro/infrastructure/logger/interface"
+	infraotel "github.com/BenyaChef/micro/infrastructure/otel"
 )
 
 type Builder struct {
 	logPublisher    loggerinterface.LogPublisher
+	grpcMonitor     *infraotel.GRPCMonitor
 	port            string
 	shutdownTimeout time.Duration
 }
@@ -24,6 +26,12 @@ func NewBuilder() *Builder {
 
 func (b *Builder) LogPublisher(logPublisher loggerinterface.LogPublisher) *Builder {
 	b.logPublisher = logPublisher
+
+	return b
+}
+
+func (b *Builder) GRPCMonitor(grpcMonitor *infraotel.GRPCMonitor) *Builder {
+	b.grpcMonitor = grpcMonitor
 
 	return b
 }
@@ -46,7 +54,10 @@ func (b *Builder) Build() (*Server, error) {
 	}
 
 	server := grpc.NewServer(
-		grpc.UnaryInterceptor(grpcservermiddleware.LogCall(b.logPublisher)),
+		grpc.ChainUnaryInterceptor(
+			grpcservermiddleware.LogCall(b.logPublisher),
+			grpcservermiddleware.Metrics(b.grpcMonitor),
+		),
 	)
 
 	return &Server{

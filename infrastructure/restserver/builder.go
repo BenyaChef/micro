@@ -9,6 +9,7 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	loggerinterface "github.com/BenyaChef/micro/infrastructure/logger/interface"
+	infraotel "github.com/BenyaChef/micro/infrastructure/otel"
 	restserverhandler "github.com/BenyaChef/micro/infrastructure/restserver/handler"
 	restserverinterface "github.com/BenyaChef/micro/infrastructure/restserver/interface"
 	restservermiddleware "github.com/BenyaChef/micro/infrastructure/restserver/middleware"
@@ -18,6 +19,7 @@ import (
 
 type Builder struct {
 	logPublisher    loggerinterface.LogPublisher
+	httpMonitor     *infraotel.HTTPMonitor
 	errorResolver   restserverinterface.ErrorResolver
 	serviceName     string
 	port            string
@@ -38,6 +40,12 @@ func NewBuilder() *Builder {
 
 func (b *Builder) LogPublisher(logPublisher loggerinterface.LogPublisher) *Builder {
 	b.logPublisher = logPublisher
+
+	return b
+}
+
+func (b *Builder) HTTPMonitor(httpMonitor *infraotel.HTTPMonitor) *Builder {
+	b.httpMonitor = httpMonitor
 
 	return b
 }
@@ -130,6 +138,7 @@ func (b *Builder) Build() (*Server, error) {
 	router.Use(restservermiddleware.RequestID)
 	router.Use(restservermiddleware.Recover(b.logPublisher))
 	router.Use(restservermiddleware.LogRequest(b.logPublisher))
+	router.Use(restservermiddleware.Metrics(b.httpMonitor))
 
 	restserverhandler.RegisterHealth(router, b.serviceName, b.logPublisher)
 

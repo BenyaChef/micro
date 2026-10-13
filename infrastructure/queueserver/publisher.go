@@ -7,6 +7,7 @@ import (
 	"github.com/IBM/sarama"
 
 	loggerinterface "github.com/BenyaChef/micro/infrastructure/logger/interface"
+	infraotel "github.com/BenyaChef/micro/infrastructure/otel"
 	queueserverinterface "github.com/BenyaChef/micro/infrastructure/queueserver/interface"
 	queueservermodel "github.com/BenyaChef/micro/infrastructure/queueserver/model"
 )
@@ -16,6 +17,7 @@ var _ queueserverinterface.QueuePublisher = (*Publisher)(nil)
 type Publisher struct {
 	producer     sarama.SyncProducer
 	logPublisher loggerinterface.LogPublisher
+	kafkaMonitor *infraotel.KafkaMonitor
 	brokers      []string
 }
 
@@ -30,8 +32,12 @@ func (p *Publisher) SendMessage(ctx context.Context, message *queueservermodel.P
 		Value: sarama.ByteEncoder(message.Value),
 	})
 	if err != nil {
+		p.kafkaMonitor.RecordPublish(ctx, message.Topic, infraotel.ResultError)
+
 		return ErrSendFailed(message.Topic, err)
 	}
+
+	p.kafkaMonitor.RecordPublish(ctx, message.Topic, infraotel.ResultSuccess)
 
 	p.logPublisher.LogInfo(ctx, "message published",
 		"topic", message.Topic,

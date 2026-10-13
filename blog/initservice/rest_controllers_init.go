@@ -9,6 +9,7 @@ import (
 func (c *DependencyContainer) initRESTServer() error {
 	server, err := restserver.NewBuilder().
 		LogPublisher(c.infra.LogPublisher()).
+		HTTPMonitor(c.infra.HTTPMonitor()).
 		ErrorResolver(postrestcontroller.NewErrorResolver()).
 		ServiceName(c.serviceName).
 		Port(c.environments.restPort).

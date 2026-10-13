@@ -4,10 +4,12 @@ import (
 	"context"
 	"errors"
 	"strings"
+	"time"
 
 	"github.com/IBM/sarama"
 
 	loggerinterface "github.com/BenyaChef/micro/infrastructure/logger/interface"
+	infraotel "github.com/BenyaChef/micro/infrastructure/otel"
 	queueserverinterface "github.com/BenyaChef/micro/infrastructure/queueserver/interface"
 	queueservermodel "github.com/BenyaChef/micro/infrastructure/queueserver/model"
 )
@@ -18,6 +20,7 @@ type Consumer struct {
 	group        sarama.ConsumerGroup
 	handler      queueserverinterface.QueueHandler
 	logPublisher loggerinterface.LogPublisher
+	kafkaMonitor *infraotel.KafkaMonitor
 	topics       []string
 	groupID      string
 	semaphore    chan struct{}
@@ -102,5 +105,15 @@ func (c *Consumer) handle(ctx context.Context, saramaMessage *sarama.ConsumerMes
 		Offset:    saramaMessage.Offset,
 	}
 
-	return c.handler.Handle(ctx, message)
+	started := time.Now()
+	err := c.handler.Handle(ctx, message)
+
+	result := infraotel.ResultSuccess
+	if err != nil {
+		result = infraotel.ResultError
+	}
+
+	c.kafkaMonitor.RecordProcess(ctx, message.Topic, result, time.Since(started).Seconds())
+
+	return err
 }

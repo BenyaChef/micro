@@ -8,12 +8,14 @@ import (
 	"github.com/IBM/sarama"
 
 	loggerinterface "github.com/BenyaChef/micro/infrastructure/logger/interface"
+	infraotel "github.com/BenyaChef/micro/infrastructure/otel"
 	queueservermodel "github.com/BenyaChef/micro/infrastructure/queueserver/model"
 )
 
 type PublisherBuilder struct {
 	brokers      []string
 	logPublisher loggerinterface.LogPublisher
+	kafkaMonitor *infraotel.KafkaMonitor
 	retryMax     int
 	timeout      time.Duration
 }
@@ -33,6 +35,12 @@ func (b *PublisherBuilder) Brokers(brokers string) *PublisherBuilder {
 
 func (b *PublisherBuilder) LogPublisher(logPublisher loggerinterface.LogPublisher) *PublisherBuilder {
 	b.logPublisher = logPublisher
+
+	return b
+}
+
+func (b *PublisherBuilder) KafkaMonitor(kafkaMonitor *infraotel.KafkaMonitor) *PublisherBuilder {
+	b.kafkaMonitor = kafkaMonitor
 
 	return b
 }
@@ -65,7 +73,12 @@ func (b *PublisherBuilder) Build() (*Publisher, error) {
 		return nil, ErrConnectFailed(strings.Join(b.brokers, ","), err)
 	}
 
-	return &Publisher{producer: producer, logPublisher: b.logPublisher, brokers: b.brokers}, nil
+	return &Publisher{
+		producer:     producer,
+		logPublisher: b.logPublisher,
+		kafkaMonitor: b.kafkaMonitor,
+		brokers:      b.brokers,
+	}, nil
 }
 
 func (b *PublisherBuilder) checkRequiredFields() error {

@@ -7,6 +7,7 @@ import (
 	"github.com/IBM/sarama"
 
 	loggerinterface "github.com/BenyaChef/micro/infrastructure/logger/interface"
+	infraotel "github.com/BenyaChef/micro/infrastructure/otel"
 	queueserverinterface "github.com/BenyaChef/micro/infrastructure/queueserver/interface"
 	queueservermodel "github.com/BenyaChef/micro/infrastructure/queueserver/model"
 )
@@ -17,6 +18,7 @@ type ConsumerBuilder struct {
 	groupID        string
 	handler        queueserverinterface.QueueHandler
 	logPublisher   loggerinterface.LogPublisher
+	kafkaMonitor   *infraotel.KafkaMonitor
 	maxConcurrency int
 }
 
@@ -58,6 +60,12 @@ func (b *ConsumerBuilder) LogPublisher(logPublisher loggerinterface.LogPublisher
 	return b
 }
 
+func (b *ConsumerBuilder) KafkaMonitor(kafkaMonitor *infraotel.KafkaMonitor) *ConsumerBuilder {
+	b.kafkaMonitor = kafkaMonitor
+
+	return b
+}
+
 func (b *ConsumerBuilder) MaxConcurrency(maxConcurrency int) *ConsumerBuilder {
 	b.maxConcurrency = maxConcurrency
 
@@ -82,6 +90,7 @@ func (b *ConsumerBuilder) Build() (*Consumer, error) {
 		group:        group,
 		handler:      b.handler,
 		logPublisher: b.logPublisher,
+		kafkaMonitor: b.kafkaMonitor,
 		topics:       b.topics,
 		groupID:      b.groupID,
 		semaphore:    make(chan struct{}, b.maxConcurrency),

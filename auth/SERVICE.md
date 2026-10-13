@@ -23,7 +23,9 @@ go run ./auth
 |---|---|---|
 | `LOG_LEVEL` | debug / info / warn / error | `info` |
 | `REST_PORT` | Порт REST-API | `8081` |
+| `ENVIRONMENT` | Метка окружения в метриках | `local` |
 | `GRPC_PORT` | Порт gRPC для межсервисных вызовов | `9091` |
+| `METRICS_PORT` | Порт `/metrics` для Prometheus | `9101` |
 | `POSTGRES_DSN` | Строка подключения | обязательна |
 | `POSTGRES_MAX_CONNS` | Верхняя граница пула | `10` |
 | `POSTGRES_MIN_CONNS` | Тёплые соединения | `2` |

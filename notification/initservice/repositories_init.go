@@ -3,6 +3,7 @@ package initservice
 import (
 	"context"
 
+	infraotel "github.com/BenyaChef/micro/infrastructure/otel"
 	"github.com/BenyaChef/micro/infrastructure/postgres"
 	notificationrepository "github.com/BenyaChef/micro/notification/adapter/repository/notification"
 )
@@ -25,7 +26,7 @@ func (c *DependencyContainer) initPostgres(ctx context.Context) error {
 
 	c.postgresClient = client
 
-	return nil
+	return infraotel.RegisterPostgresMonitor(c.infra.OTelProvider().MeterProvider(), client.Pool())
 }
 
 func (c *DependencyContainer) initRepositories() error {

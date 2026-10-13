@@ -9,6 +9,7 @@ func (c *DependencyContainer) initQueuePublisher() error {
 	publisher, err := queueserver.NewPublisherBuilder().
 		Brokers(c.environments.kafkaBrokers).
 		LogPublisher(c.infra.LogPublisher()).
+		KafkaMonitor(c.infra.KafkaMonitor()).
 		Build()
 	if err != nil {
 		return err

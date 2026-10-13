@@ -1,7 +1,7 @@
 MODULES := common infrastructure auth blog notification
 PKGS    := $(addsuffix /...,$(addprefix ./,$(MODULES)))
 
-COMPOSE := docker compose -f deploy/docker-compose.yml
+COMPOSE := docker compose -f local/docker-compose.yml
 POSTGRES_DSN ?= postgres://micro:micro@localhost:5432/micro?sslmode=disable
 
 GOOSE_VERSION := v3.28.0
@@ -10,7 +10,7 @@ GOOSE := GOWORK=off go run github.com/pressly/goose/v3/cmd/goose@$(GOOSE_VERSION
 
 .PHONY: build vet lint test test-integration tidy clean proto \
 	run-auth run-blog run-notification \
-	up down down-v logs ps psql \
+	up up-infra down down-v logs ps psql \
 	migrate migrate-down migrate-status migrate-create
 build:
 	go build -o bin/ $(PKGS)
@@ -56,7 +56,10 @@ run-blog:
 run-notification:
 	go run ./notification
 up:
-	$(COMPOSE) up -d --wait
+	$(COMPOSE) up -d --build --wait
+
+up-infra:
+	$(COMPOSE) up -d --wait postgres kafka
 
 down:
 	$(COMPOSE) down

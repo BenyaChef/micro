@@ -28,7 +28,9 @@ go run ./blog
 | Переменная | Назначение | По умолчанию |
 |---|---|---|
 | `LOG_LEVEL` | debug / info / warn / error | `info` |
+| `ENVIRONMENT` | Метка окружения в метриках | `local` |
 | `REST_PORT` | Порт REST-API | `8082` |
+| `METRICS_PORT` | Порт `/metrics` для Prometheus | `9102` |
 | `POSTGRES_DSN` | Строка подключения | обязательна |
 | `POSTGRES_MAX_CONNS` | Верхняя граница пула | `10` |
 | `POSTGRES_MIN_CONNS` | Тёплые соединения | `2` |

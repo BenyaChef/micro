@@ -4,6 +4,7 @@ import (
 	"context"
 
 	userrepository "github.com/BenyaChef/micro/auth/adapter/repository/user"
+	infraotel "github.com/BenyaChef/micro/infrastructure/otel"
 	"github.com/BenyaChef/micro/infrastructure/postgres"
 )
 
@@ -25,7 +26,7 @@ func (c *DependencyContainer) initPostgres(ctx context.Context) error {
 
 	c.postgresClient = client
 
-	return nil
+	return infraotel.RegisterPostgresMonitor(c.infra.OTelProvider().MeterProvider(), client.Pool())
 }
 
 func (c *DependencyContainer) initRepositories() error {

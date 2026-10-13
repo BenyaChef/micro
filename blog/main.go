@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	"golang.org/x/sync/errgroup"
+
 	"github.com/BenyaChef/micro/blog/initservice"
 	"github.com/BenyaChef/micro/infrastructure/initinfra"
 )
@@ -18,13 +20,15 @@ func main() {
 }
 
 func run() error {
-	infra, err := initinfra.Bootstrap(serviceName)
+	ctx, stop := initinfra.SignalContext()
+	defer stop()
+
+	infra, err := initinfra.Bootstrap(ctx, serviceName)
 	if err != nil {
 		return err
 	}
 
-	ctx, stop := initinfra.SignalContext()
-	defer stop()
+	defer infra.Close(ctx)
 
 	container, err := initservice.NewDependencyContainer(ctx, infra, serviceName)
 	if err != nil {
@@ -33,5 +37,15 @@ func run() error {
 
 	defer container.Close(ctx)
 
-	return container.RESTServer().Run(ctx)
+	group, groupCtx := errgroup.WithContext(ctx)
+
+	group.Go(func() error {
+		return container.RESTServer().Run(groupCtx)
+	})
+
+	group.Go(func() error {
+		return infra.MetricsServer().Run(groupCtx)
+	})
+
+	return group.Wait()
 }
